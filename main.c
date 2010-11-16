@@ -1,21 +1,16 @@
 #include <stdio.h>
 #include <string.h>
-#include "term.h"
+#include "vt100.h"
 
 #define MAXLINE 1024
 
 
 int main(int argc, char *argv[])
 {
-  char buff[MAXLINE];
-  int count;
+  unsigned short buff[] = {'h', 'o'};
 
-  puts("\033c");
   init_term();
-
-
-  while (fgets(buff, MAXLINE, stdin))
-    term_write(buff, strlen(buff));
+  term_write(buff, sizeof(buff));
 
   return 0;
 }

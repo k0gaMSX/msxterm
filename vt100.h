@@ -54,12 +54,11 @@
 
 struct video_att {
   /* attribute flags */
-  unsigned char bold      : 1;
-  unsigned char underline : 1;
-  unsigned char reverse   : 1;
-  unsigned char bg        : 3;
-  unsigned char fg        : 3;
-  unsigned char :0;
+  unsigned bold      : 1;
+  unsigned underline : 1;
+  unsigned reverse   : 1;
+  unsigned bg        : 3;
+  unsigned fg        : 3;
 };
 
 #define NPARS        16

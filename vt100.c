@@ -141,10 +141,10 @@ static void restore_cur(void)
 
 
 
-static u8 doESC(u8 code)
+static void doESC(u8 c)
 {
   xterm.state = ESnormal;
-  switch(code) {
+  switch(c) {
   case '[':
     xterm.state = ESsquare;
     return;
@@ -212,21 +212,21 @@ static u8 doESC(u8 code)
 
 
 
-static u8 do_square(register u8 code)
+static u8 do_square(register u8 c)
 {
   xterm.question = 0;
   xterm.state = ESgetpars;
   memset(xterm.pars, 0, NPARS);
   xterm.npars = 0;
 
-  if (code == '[') {
+  if (c == '[') {
     xterm.state = ESfunckey;
     return 1;
-  } else if (code == 'N') {
+  } else if (c == 'N') {
     return 1;                   /* TODO: SS2 */
-  } else if (code == 'O') {
+  } else if (c == 'O') {
     return 1;                   /* TODO: SS3 */
-  } else if (code == '?') {
+  } else if (c == '?') {
     xterm.question = 1;
     return 1;
   }
@@ -239,14 +239,14 @@ static u8 do_square(register u8 code)
 
 
 
-static u8 do_getpars(register u8 code)
+static u8 do_getpars(register u8 c)
 {
-  if (code == ';' && xterm.npars < NPARS) {
+  if (c == ';' && xterm.npars < NPARS) {
     xterm.npars++;
     return 1;
-  } else if (isdigit(code)) {
+  } else if (isdigit(c)) {
     xterm.pars[xterm.npars] *= 10;
-    xterm.pars[xterm.npars] += code - '0';
+    xterm.pars[xterm.npars] += c - '0';
     return 1;
   } else {
     xterm.state = ESgotpars;
@@ -339,7 +339,7 @@ static void do_SGR(register u8 par)
 
 
 
-static void do_gotpars(register u8 code)
+static void do_gotpars(register u8 c)
 {
   u8 par1 = xterm.pars[0], par2 = xterm.pars[0];
   register s8 x = xterm.xpos, y = xterm.ypos;
@@ -347,7 +347,7 @@ static void do_gotpars(register u8 code)
   xterm.state = ESnormal;
 
  /* TODO: Implement operations */
-  switch (code) {
+  switch (c) {
   case 'A':                     /* Cursor up (CUU) */
     if (!par1)  ++par1;
     y -= par1;
@@ -406,23 +406,23 @@ static void do_gotpars(register u8 code)
 }
 
 
-static void do_state(register u8 code)
+static void do_state(register u8 c)
 {
   switch (xterm.state) {
   case ESesc:
-    doESC(code);
+    doESC(c);
     return;
 
   case ESsquare:
-    if (do_square(code))
+    if (do_square(c))
       return;
 
   case ESgetpars:
-    if (do_getpars(code))
+    if (do_getpars(c))
       return;
 
   case ESgotpars:
-    do_gotpars(code);
+    do_gotpars(c);
     return;
 
     /* TODO: Implement this states */
@@ -441,9 +441,9 @@ static void do_state(register u8 code)
 
 
 
-static void ctrl_codes(register u8 code)
+static void ctrl_codes(register u8 c)
 {
-  switch (code) {
+  switch (c) {
   case 0x00:
     return;
   case 0x07:              /* BEL */
@@ -489,14 +489,13 @@ static void ctrl_codes(register u8 code)
     return;
   }
 
-  do_state(code);
+  do_state(c);
 
   if (xterm.state != ESnormal)  /* we are inside a sequence yet */
     return;
 
  act_ptr:
   vram_ptr(xterm.xpos, xterm.ypos, xterm.nrows);
-  return;
 }
 
 
