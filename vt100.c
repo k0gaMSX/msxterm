@@ -30,11 +30,17 @@ static void reset_terminal(void)
 
 void init_term(void)
 {
+  u8 i;
+  u16 size;
+
   xterm.xpos = xterm.ypos = 0;
   xterm.nrows = 24;
   xterm.ncols = 80;
   xterm.mode = VT100_MODE;
   xterm.state = ESnormal;
+
+  for (i = MAXSIZEY + 1, size = 0; --i; size += MAXSIZEX)
+    xterm.map_char[i] = xterm.map_char_buf + size;
 }
 
 
@@ -100,9 +106,11 @@ static void ri()
 static void write_char(u16 c)
 {
   if (xterm.xpos < xterm.ncols) {
-    ++xterm.xpos;
     vram_write(c, VIDEO(xterm));
     vram_next();
+
+    xterm.map_char[xterm.xpos][xterm.xpos] = c;
+    ++xterm.xpos;
   }
 }
 
