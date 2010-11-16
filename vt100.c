@@ -1,4 +1,8 @@
 
+#include <string.h>
+#include <ctype.h>
+#include <assert.h>
+
 #include "vt100.h"
 #include "bell.h"
 #include "vram.h"
@@ -93,7 +97,7 @@ static void ri()
 
 
 
-static void write_char(u8 c)
+static void write_char(u16 c)
 {
   if (xterm.xpos < xterm.ncols) {
     ++xterm.xpos;
@@ -129,7 +133,7 @@ static void restore_cur(void)
 
 
 
-static void doESC(u8 code)
+static u8 doESC(u8 code)
 {
   xterm.state = ESnormal;
   switch(code) {
@@ -194,35 +198,231 @@ static void doESC(u8 code)
 
 
 
-
-
-
-static void do_state(u8 code)
+static u8 do_square(register u8 code)
 {
-    switch (xterm.state) {
-    case ESesc:
-      doESC(code);
-      return;
+  xterm.question = 0;
+  xterm.state = ESgetpars;
+  memset(xterm.pars, 0, NPARS);
+  xterm.npars = 0;
 
-    case ESsquare:
-    case ESgetpars:
-    case ESgotpars:
-    case ESfunckey:
-    case EShash:
-    case ESsetG1:
-    case ESsetG0:
-    case ESpercent:
-    case ESignore:
-    case ESnonstd:
-    case ESpalette:
-      break;
+  if (code == '[' || code == 'O') {
+    xterm.state = ESfunckey;
+    return 1;
+  } else if (code == '?') {
+    xterm.question = 1;
+    return 1;
+  }
+
+  return 0;                       /* return 0 if code wasn't consumed */
+}
+
+
+
+
+
+
+static u8 do_getpars(register u8 code)
+{
+  if (code == ';' && xterm.npars < NPARS) {
+    xterm.npars++;
+    return 1;
+  } else if (isdigit(code)) {
+    xterm.pars[xterm.npars] *= 10;
+    xterm.pars[xterm.npars] += code - '0';
+    return 1;
+  } else {
+    xterm.state = ESgotpars;
+  }
+
+  return 0;                     /* return 0 if code wasn't consumed */
+}
+
+
+
+
+static void goto_xy(register s8 x, register s8 y)
+{
+  if (x < 0)  x = 0;
+  else if (x >= xterm.nrows) x = xterm.ncols - 1;
+
+  if (y < 0)  y = 0;
+  else if (y >= xterm.nrows) y = xterm.nrows - 1;
+
+  xterm.xpos = x;
+  xterm.ypos = y;
+}
+
+
+
+static void do_SGR(register u8 par)
+{
+  switch (par) {
+  case 0:                       /* reset/normal */
+    VIDEO(xterm) = 0;
+    return;
+
+  case 1:                       /* bold */
+    xterm.video.bold = 1;
+    return;
+
+  case 2:                       /* Faint */
+    xterm.video.bold = 1;
+    return;
+
+  case 4:                       /* underline */
+    xterm.video.underline = 1;
+    return;
+
+  case 7:                       /* reverse video */
+    xterm.video.reverse = 1;
+    return;
+
+  case 22:                      /* not bold */
+    xterm.video.bold = 0;
+    return;
+
+  case 24:                      /* not underline */
+    xterm.video.underline = 0;
+    return;
+
+  case 27:                      /* positive video */
+    xterm.video.reverse = 0;
+    return;
+
+  case 38:                      /* ANSI X3.64-1979 (SCO-ish?) */
+    xterm.video.underline = 1;  /* Enable underline and white foreground */
+    xterm.video.fg = 7;
+    return;
+
+  case 39:                           /* ANSI X3.64-1979 (SCO-ish?) */
+    xterm.video.underline = 0;       /* Disable underline and default */
+    xterm.video.fg = xterm.bg_color; /* foreground */
+    return;
+
+  case 49:
+  default:
+    if (par >= 10 && par <= 20) {
+      /* TODO: selecting font */
+    }
+
+
+    if (par >= 30 && par <= 37) {
+      xterm.video.fg = par - 30;
+      return;
+    }
+
+    if (par >= 40 && par <= 40) {
+      xterm.video.bg = par - 40;
+      return;
+    }
   }
 }
 
 
 
 
-static void ctrl_codes(u8 code)
+static void do_gotpars(register u8 code)
+{
+  u8 par1 = xterm.pars[0], par2 = xterm.pars[0];
+  register s8 x = xterm.xpos, y = xterm.ypos;
+
+  xterm.state = ESnormal;
+
+ /* TODO: Implement operations */
+  switch (code) {
+  case 'A':                     /* Cursor up (CUU) */
+    if (!par1)  ++par1;
+    y -= par1;
+    goto_xy(x,y);
+    return;
+
+  case 'B':                     /* Cursor down (CUD) */
+    if (!par1) ++par1;
+    y += par1;
+    goto_xy(x,y);
+    return;
+
+  case 'C':                     /* Cursor forward (CUF) */
+    if (!par1) ++par1;
+    y += par1;
+    goto_xy(x,y);
+    return;
+
+  case 'D':                     /* Cursor backward (CUB) */
+    if (!par1) ++par1;
+    y += par1;
+    goto_xy(x,y);
+    return;
+
+  case 'H':                     /* Cursor position (CUP) */
+    if (!par1) ++par1;
+    if (!par2) ++par2;
+    x = par1;
+    y = par2;
+    goto_xy(x,y);
+    return;
+
+  case 'm':                     /* Character attributes (SGR) */
+    do_SGR(par1);
+    return;
+
+  case '@':                     /* Insert blank (ICH) */
+  case 'J':                     /* Erase in display (ED) */
+  case 'K':                     /* Erase in line (EL) */
+  case 'L':                     /* Insert lines (IL) */
+  case 'M':                     /* Delete lines (DL) */
+  case 'P':                     /* Delete characters (DCH) */
+  case 'T':                     /* Initiate hilite mouse tracking */
+  case 'c':                     /* Send device attributes (DA) */
+  case 'f':                     /* Horizontal and vertical pos (HVP) */
+  case 'g':                     /* Tab clear (TBC) */
+  case 'h':                     /* Set mode (SM) */
+  case 'l':                     /* Reset mode (RM) */
+  case 'n':                     /* Device status report (DSR) */
+  case 'r':                     /* Set scrolling Region (DECSTBM) */
+  case 'x':               /* Request Terminal parameters (DECREQTPARM)*/
+    return;
+  }
+
+
+}
+
+
+static void do_state(register u8 code)
+{
+  switch (xterm.state) {
+  case ESesc:
+    doESC(code);
+    return;
+
+  case ESsquare:
+    if (do_square(code))
+      return;
+
+  case ESgetpars:
+    if (do_getpars(code))
+      return;
+
+  case ESgotpars:
+    do_gotpars(code);
+    return;
+
+  case ESfunckey:
+  case EShash:
+  case ESsetG1:
+  case ESsetG0:
+  case ESpercent:
+  case ESignore:
+  case ESnonstd:
+  case ESpalette:
+    break;
+  }
+}
+
+
+
+
+static void ctrl_codes(register u8 code)
 {
   switch (code) {
   case 0x00:
@@ -272,6 +472,9 @@ static void ctrl_codes(u8 code)
 
   do_state(code);
 
+  if (xterm.state != ESnormal)  /* we are inside a sequence yet */
+    return;
+
  act_ptr:
   vram_ptr(xterm.xpos, xterm.ypos, xterm.nrows);
   return;
@@ -282,19 +485,22 @@ static void ctrl_codes(u8 code)
 
 
 
-void term_write (u8 * buf, int count)
+void term_write (register u16 * buf, register int count)
 {
+
   hide_cursor();
 
-  ++count;
-  while (--count) {
-    register u8 c = *buf++;
+  assert(count);
 
-    if (c < 0x20 || c == 0x9b)    /* ascii control or meta ESC  */
+  do {
+    register u16 c = *buf++;
+
+    if (xterm.state != ESnormal || c < 0x20 || c == 0x9b)
       ctrl_codes(c);
     else
       write_char(c);
-  }
+
+  } while (--count);
 
   enable_cursor();
 }

@@ -54,15 +54,18 @@
 
 struct video_att {
   /* attribute flags */
-  unsigned char bright    : 2;  /* 0=half-bright, 1=normal, 2=bold */
+  unsigned char bold      : 1;
   unsigned char underline : 1;
   unsigned char reverse   : 1;
-  unsigned char color     : 3;
+  unsigned char bg        : 3;
+  unsigned char fg        : 3;
   unsigned char :0;
 };
 
-
+#define NPARS        16
 #define VT100_MODE   1
+#define MAXSIZEX     132
+#define MAXSIZEY     30
 
 
 struct term {
@@ -71,16 +74,22 @@ struct term {
   u8 state;
   u8 offset;
   u8 mode;
+  u8 question;
 
-  u8 xpos, ypos;
-  struct video_att video;
+  u8 pars[NPARS];
+  u8 npars;
 
-  u8 xpos_s, ypos_s;
-  struct video_att video_s;
+  u8 xpos, ypos, xpos_s, ypos_s;
+  struct video_att video, video_s;
+  u8 bg_color;
+  u8 fg_color;
+
+  u16 ** map_char;
+  u16 map_char_buf[MAXSIZEY * MAXSIZEX];
 };
 
 
 
 void init_term(void);
-void term_write (u8 * buf, int count);
+void term_write (u16 * buf, int count);
 #endif /* _VT100_H_ */
