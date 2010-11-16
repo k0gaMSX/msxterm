@@ -193,6 +193,12 @@ static u8 doESC(u8 code)
     /* TODO: G0 */
   case ')':                     /* Designate G1 character set (ISO 2022) */
     /* TODO: G1 */
+  case '*':                     /* Designate G2 character set (ISO 2022) */
+    /* TODO: G2 */
+  case '+':                     /* Designate G3 character set (ISO 2022) */
+    /* TODO: G3 */
+
+
   case '#':                     /* DEC screen alignement test (DECALN) */
     /* TODO: DEC test */
   case '>':                     /* Normal keypad (DECPNM) */
@@ -213,9 +219,13 @@ static u8 do_square(register u8 code)
   memset(xterm.pars, 0, NPARS);
   xterm.npars = 0;
 
-  if (code == '[' || code == 'O') {
+  if (code == '[') {
     xterm.state = ESfunckey;
     return 1;
+  } else if (code == 'N') {
+    return 1;                   /* TODO: SS2 */
+  } else if (code == 'O') {
+    return 1;                   /* TODO: SS3 */
   } else if (code == '?') {
     xterm.question = 1;
     return 1;
@@ -415,6 +425,7 @@ static void do_state(register u8 code)
     do_gotpars(code);
     return;
 
+    /* TODO: Implement this states */
   case ESfunckey:
   case EShash:
   case ESsetG1:
