@@ -476,9 +476,10 @@ static void ctrl_codes(register u8 c)
     del();
     goto act_ptr;
 
-  case 0x18: case 0x1a:    /* TODO: describe here */
-    xterm.state = ESnormal;    /* taken from linux kernel. I don't know why */
-    return;                    /* this codes reset the sequence */
+  case 0x18:                 /* CAN character */
+  case 0x1a:                 /* SUB character */
+    xterm.state = ESnormal;  /* they must finish actual sequence */
+    return;
 
   case 0x1b:                  /* ESC */
     xterm.state = ESesc;
@@ -505,10 +506,8 @@ static void ctrl_codes(register u8 c)
 
 void term_write (register u16 * buf, register int count)
 {
-
+  assert(count && buf);
   hide_cursor();
-
-  assert(count);
 
   do {
     register u16 c = *buf++;
