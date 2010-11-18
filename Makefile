@@ -1,4 +1,4 @@
-SRC = bell.c kbd.c vt100.c vram.c main.c bell.c utf8.c encoding.c
+SRC = bell.c kbd.c vt100.c vram.c main.c bell.c encoding.c
 OBJ = $(SRC:.c=.obj)
 
 DEPS = $(SRC:.c=.d)
