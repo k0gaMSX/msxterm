@@ -272,70 +272,73 @@ static void goto_xy(register s8 x, register s8 y)
 
 
 
-static void do_SGR(register u8 par)
+static void do_SGR(void)
 {
-  switch (par) {
-  case 0:                       /* reset/normal */
-    VIDEO(xterm) = 0;
-    return;
+  u8 * ptr = xterm.pars;
+  while (xterm.npars--) {
+    register u8 par = *ptr++;
+      switch (par) {
+      case 0:                       /* reset/normal */
+        VIDEO(xterm) = 0;
+        return;
 
-  case 1:                       /* bold */
-    xterm.video.bold = 1;
-    return;
+      case 1:                       /* bold */
+        xterm.video.bold = 1;
+        return;
 
-  case 2:                       /* Faint */
-    xterm.video.bold = 1;
-    return;
+      case 2:                       /* Faint */
+        xterm.video.bold = 1;
+        return;
 
-  case 4:                       /* underline */
-    xterm.video.underline = 1;
-    return;
+      case 4:                       /* underline */
+        xterm.video.underline = 1;
+        return;
 
-  case 7:                       /* reverse video */
-    xterm.video.reverse = 1;
-    return;
+      case 7:                       /* reverse video */
+        xterm.video.reverse = 1;
+        return;
 
-  case 22:                      /* not bold */
-    xterm.video.bold = 0;
-    return;
+      case 22:                      /* not bold */
+        xterm.video.bold = 0;
+        return;
 
-  case 24:                      /* not underline */
-    xterm.video.underline = 0;
-    return;
+      case 24:                      /* not underline */
+        xterm.video.underline = 0;
+        return;
 
-  case 27:                      /* positive video */
-    xterm.video.reverse = 0;
-    return;
+      case 27:                      /* positive video */
+        xterm.video.reverse = 0;
+        return;
 
-  case 38:                      /* ANSI X3.64-1979 (SCO-ish?) */
-    xterm.video.underline = 1;  /* Enable underline and white foreground */
-    xterm.video.fg = 7;
-    return;
+      case 38:                      /* ANSI X3.64-1979 (SCO-ish?) */
+        xterm.video.underline = 1;  /* Enable underline and white foreground */
+        xterm.video.fg = 7;
+        return;
 
-  case 39:                           /* ANSI X3.64-1979 (SCO-ish?) */
-    xterm.video.underline = 0;       /* Disable underline and default */
-    xterm.video.fg = xterm.bg_color; /* foreground */
-    return;
+      case 39:                           /* ANSI X3.64-1979 (SCO-ish?) */
+        xterm.video.underline = 0;       /* Disable underline and default */
+        xterm.video.fg = xterm.bg_color; /* foreground */
+        return;
 
-  case 49:
-  default:
-    if (par >= 10 && par <= 20) {
-      /* TODO: selecting font */
-    }
+      case 49:
+      default:
+        if (par >= 10 && par <= 20) {
+          /* TODO: selecting font */
+        }
 
 
-    if (par >= 30 && par <= 37) {
-      xterm.video.fg = par - 30;
-      return;
-    }
+        if (par >= 30 && par <= 37) {
+          xterm.video.fg = par - 30;
+          return;
+        }
 
-    if (par >= 40 && par <= 40) {
-      xterm.video.bg = par - 40;
-      return;
-    }
+        if (par >= 40 && par <= 47) {
+          xterm.video.bg = par - 40;
+          return;
+        }
+      }
   }
 }
-
 
 
 
@@ -381,7 +384,7 @@ static void do_gotpars(register u8 c)
     return;
 
   case 'm':                     /* Character attributes (SGR) */
-    do_SGR(par1);
+    do_SGR();
     return;
 
   case '@':                     /* Insert blank (ICH) */
@@ -398,6 +401,7 @@ static void do_gotpars(register u8 c)
   case 'l':                     /* Reset mode (RM) */
   case 'n':                     /* Device status report (DSR) */
   case 'r':                     /* Set scrolling Region (DECSTBM) */
+
   case 'x':               /* Request Terminal parameters (DECREQTPARM)*/
     return;
   }
