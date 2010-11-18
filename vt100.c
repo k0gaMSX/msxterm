@@ -363,68 +363,76 @@ static void do_gotpars(register u8 c)
   register s8 x = xterm.xpos, y = xterm.ypos;
 
   xterm.state = ESnormal;
+  if (!xterm.question) {
+    /* TODO: Implement operations */
+    switch (c) {
+    case 'A':                     /* Cursor up (CUU) */
+      if (!par1)  ++par1;
+      y -= par1;
+      goto_xy(x,y);
+      return;
 
- /* TODO: Implement operations */
-  switch (c) {
-  case 'A':                     /* Cursor up (CUU) */
-    if (!par1)  ++par1;
-    y -= par1;
-    goto_xy(x,y);
-    return;
+    case 'B':                     /* Cursor down (CUD) */
+      if (!par1) ++par1;
+      y += par1;
+      goto_xy(x,y);
+      return;
 
-  case 'B':                     /* Cursor down (CUD) */
-    if (!par1) ++par1;
-    y += par1;
-    goto_xy(x,y);
-    return;
+    case 'C':                     /* Cursor forward (CUF) */
+      if (!par1) ++par1;
+      y += par1;
+      goto_xy(x,y);
+      return;
 
-  case 'C':                     /* Cursor forward (CUF) */
-    if (!par1) ++par1;
-    y += par1;
-    goto_xy(x,y);
-    return;
+    case 'D':                     /* Cursor backward (CUB) */
+      if (!par1) ++par1;
+      y += par1;
+      goto_xy(x,y);
+      return;
 
-  case 'D':                     /* Cursor backward (CUB) */
-    if (!par1) ++par1;
-    y += par1;
-    goto_xy(x,y);
-    return;
+    case 'H':                     /* Cursor position (CUP) */
+      if (!par1) ++par1;
+      if (!par2) ++par2;
+      x = par1;
+      y = par2;
+      goto_xy(x,y);
+      return;
 
-  case 'H':                     /* Cursor position (CUP) */
-    if (!par1) ++par1;
-    if (!par2) ++par2;
-    x = par1;
-    y = par2;
-    goto_xy(x,y);
-    return;
+    case 'm':                     /* Character attributes (SGR) */
+      do_SGR();
+      return;
 
-  case 'm':                     /* Character attributes (SGR) */
-    do_SGR();
-    return;
+    case '@':                     /* Insert blank (ICH) */
+    case 'J':                     /* Erase in display (ED) */
+    case 'K':                     /* Erase in line (EL) */
+    case 'L':                     /* Insert lines (IL) */
+    case 'M':                     /* Delete lines (DL) */
+    case 'P':                     /* Delete characters (DCH) */
+    case 'T':                     /* Initiate hilite mouse tracking */
+    case 'c':                     /* Send device attributes (DA) */
+    case 'f':                     /* Horizontal and vertical pos (HVP) */
+    case 'g':                     /* Tab clear (TBC) */
+    case 'h':                     /* Set mode (SM) */
+    case 'l':                     /* Reset mode (RM) */
+    case 'n':                     /* Device status report (DSR) */
 
-  case '@':                     /* Insert blank (ICH) */
-  case 'J':                     /* Erase in display (ED) */
-  case 'K':                     /* Erase in line (EL) */
-  case 'L':                     /* Insert lines (IL) */
-  case 'M':                     /* Delete lines (DL) */
-  case 'P':                     /* Delete characters (DCH) */
-  case 'T':                     /* Initiate hilite mouse tracking */
-  case 'c':                     /* Send device attributes (DA) */
-  case 'f':                     /* Horizontal and vertical pos (HVP) */
-  case 'g':                     /* Tab clear (TBC) */
-  case 'h':                     /* Set mode (SM) */
-  case 'l':                     /* Reset mode (RM) */
-  case 'n':                     /* Device status report (DSR) */
+    case 'r':                     /* Set scrolling Region (DECSTBM) */
+      scroll_region(par1, par2);
+      return;
 
-  case 'r':                     /* Set scrolling Region (DECSTBM) */
-    scroll_region(par1, par2);
-    return;
-
-  case 'x':               /* Request Terminal parameters (DECREQTPARM)*/
-    return;
+    case 'x':               /* Request Terminal parameters (DECREQTPARM)*/
+      return;
+    }
+  } else {
+    switch (c) {
+    case 'h':                   /* DEC Private mode set (DECSET) */
+    case 'l':                   /* DEC Private mode reset (DECRST) */
+    case 'r':                   /* Restore DEC Private mode values */
+    case 's':                   /* Save DEC Private mode values */
+      return;
+    }
   }
 }
-
 
 
 static void do_state(register u8 c)
