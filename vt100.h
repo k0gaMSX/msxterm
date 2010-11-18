@@ -83,6 +83,9 @@ struct term {
   u8 bg_color;
   u8 fg_color;
 
+  u8 top;
+  u8 botton;
+
   u16 ** map_char;
   u16 map_char_buf[MAXSIZEY * MAXSIZEX];
 };

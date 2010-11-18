@@ -342,6 +342,21 @@ static void do_SGR(void)
 
 
 
+
+static void scroll_region(u8 par1, u8 par2)
+{
+  if (!par1)  ++par1;
+  if (!par2)  par2 = xterm.nrows;
+
+  if (par1 < par2 && par2 <= xterm.nrows) { /* Minimum allowed region */
+    xterm.top = par1;                       /*is 2 lines */
+    xterm.botton = par2;
+    /* TODO: Cursor must go to home position */
+  }
+  return;
+}
+
+
 static void do_gotpars(register u8 c)
 {
   u8 par1 = xterm.pars[0], par2 = xterm.pars[0];
@@ -400,14 +415,16 @@ static void do_gotpars(register u8 c)
   case 'h':                     /* Set mode (SM) */
   case 'l':                     /* Reset mode (RM) */
   case 'n':                     /* Device status report (DSR) */
+
   case 'r':                     /* Set scrolling Region (DECSTBM) */
+    scroll_region(par1, par2);
+    return;
 
   case 'x':               /* Request Terminal parameters (DECREQTPARM)*/
     return;
   }
-
-
 }
+
 
 
 static void do_state(register u8 c)
