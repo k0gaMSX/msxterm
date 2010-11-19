@@ -1,4 +1,4 @@
-#include <memory.h>
+#include <string.h>
 #include "encoding.h"
 
 struct encoding * encoding;      /* struct with pointer to code/decode
@@ -34,7 +34,7 @@ void init_encoding(void)
 {
   memset(unimap, sizeof(unimap), 0);
 
-  ut8reset();
+  utf8reset();
 }
 
 
