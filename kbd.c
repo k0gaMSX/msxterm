@@ -33,65 +33,81 @@ u8 is_kbd(u8 test)
 }
 
 
-void kbd_rs232(u8 flag)
+void kbd_rstmode(u8 mask)
 {
-  mode = (flag) ? RS232_MODE : MSX_MODE;
+  mode &= ~mask;
 }
+
+
+
+void kbd_setmode(u8 mask)
+{
+  mode &= ~mask;
+  mode |= mask;
+}
+
+
+
+{
+
+
+}
+
 
 
 
 
 static u8 put_queue(u8 scancode)
 {
+
 }
 
 
 
-static void kb_ev(u8 scancode)
+static void kb_ev(u8 scancode, u8  up_flag)
 {
-  if (lastscan_v == scancode) {  /* it is a release */
-    lastscan_v = NOKEY;
+  lastscan_v = scancode;
+  lastscan_t = 0;
+
+  if (mode & KBD_RAW) {
+    put_queue(scancode);
+    put_queue(!(up_flag != 0));
     return;
   }
 
-  if (!put_queue(lastscan_v = scancode))  /* buffer overflow!!! */
-    bell();
 
-  lastscan_t = 0;
 }
 
 
-
-
-
-static u8 scan_row(register u8 xor, u8 scancode)
-{
-  u8 j;
-
-  if (!xor)
-    return scancode + 8;        /* there isn't a new key */
-
-  for (j = 9; --j; ++scancode, xor >>= 1) {
-    if (xor & 1)         /* event key */
-      kb_ev(scancode);
-  }
-
-  return scancode;
-}
 
 
 
 static void scan_matrix(void)
 {
-  register u8 i;
+  static u8 i;
   static u8 scancode;
   static u8 * kbnew, * kbold;
 
   scancode = 0;
-  kbnew = (u8 *) NEWKEY, * kbold = (u8 *) OLDKEY;
+  kbnew = (u8 *) NEWKEY, kbold = (u8 *) OLDKEY;
 
-  for (i = 0; i < NUMBER_ROW; ++i)
-    scancode = scan_row(*kbnew++ ^ *kbold++, scancode);
+  for (i = 0; i < NUMBER_ROW; ++i) {
+    u8 mask = 1;
+    u8 xor = *kbold++ ^ *kbnew;
+
+    if (!xor) {
+      scancode += 8;
+      continue;
+    }
+
+    do {
+      if (xor & mask)
+        kb_ev(scancode, *kbnew & mask);
+
+      ++scancode;
+      ++kbnew;
+    } while (mask <<= 1);
+  }
 }
 
 
