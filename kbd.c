@@ -48,14 +48,6 @@ void kbd_setmode(u8 mask)
 
 
 
-{
-
-
-}
-
-
-
-
 
 static u8 put_queue(u8 scancode)
 {
