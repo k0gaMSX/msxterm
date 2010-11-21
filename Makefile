@@ -1,16 +1,28 @@
-SRC = bell.c kbd.c vt100.c vram.c main.c encoding.c kbd.c
-OBJ = $(SRC:.c=.obj)
+MSXTERM_SRC = bell.c kbd.c vt100.c vram.c main.c encoding.c kbd.c tty.c
+MSXTERM_OBJ = $(MSXTERM_SRC:.c=.obj)
 
+SHOWKEY_SRC = kbd.c showkey.c
+SHOWKEY_OBJ = $(SHOWKEY_SRC:.c=.obj)
+
+SRC = $(MSXTERM_SRC) $(SHOWKEY_SRC)
 DEPS = $(SRC:.c=.d)
 LIBS =
 DEP = gcc
 CC = zc
 CFLAGS = -CPM
+TARGETS = msxterm.com showkey.com
 
-all:	msxterm
+
+all: $(TARGETS)
+
+install: all
+	sb $(TARGETS)
+
+showkey.com:  $(SHOWKEY_OBJ)
+	$(CC) $(CFLAGS) $^ $(LIBS) -O$@
 
 
-msxterm:  $(OBJ)
+msxterm.com:  $(MSXTERM_OBJ)
 	$(CC) $(CFLAGS) $^ $(LIBS) -O$@
 
 
@@ -33,8 +45,8 @@ distclean: clean
 
 clean:
 	rm -f *.obj
-	rm -f msxterm
 	rm -f TAGS
+	rm -f *.com
 
 
 

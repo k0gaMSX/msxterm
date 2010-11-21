@@ -1,21 +1,24 @@
 #include <string.h>
 #include <msx.h>
+#include <sys.h>
+
 #include "kbd.h"
 #include "bell.h"
+#include "tty.h"
+
 
 #define NUMBER_ROW        11
-#define NOKEY             -1
+#define NOKEY            255
 #define RS232_MODE         0
 #define MSX_MODE           1
 #define KBD_REPEAT_TIME   10
 
 
 
-
 static u8 lastscan_v;
 static u8 lastscan_t;
 static u8 mode;
-
+static u8 kbd_matrix[NUMBER_ROW];
 
 
 
@@ -23,6 +26,9 @@ void kbd_reset(void)
 {
   lastscan_v =  NOKEY;
   mode = MSX_MODE;
+  lastscan_v = 0;
+  lastscan_t = 0;
+  memset(kbd_matrix, 0xff, sizeof(kbd_matrix));
 }
 
 
@@ -48,22 +54,13 @@ void kbd_setmode(u8 mask)
 
 
 
-
-static u8 put_queue(u8 scancode)
-{
-
-}
-
-
-
-static void kb_ev(u8 scancode, u8  up_flag)
+static void kb_ev(u8 scancode)
 {
   lastscan_v = scancode;
   lastscan_t = 0;
 
   if (mode & KBD_RAW) {
     put_queue(scancode);
-    put_queue(!(up_flag != 0));
     return;
   }
 
@@ -71,34 +68,39 @@ static void kb_ev(u8 scancode, u8  up_flag)
 }
 
 
+static u8 scancode;
+static u8 * row_pointer;
 
-
-
-static void scan_matrix(void)
+static void scan_row(u8 row)
 {
-  static u8 i;
-  static u8 scancode;
-  static u8 * kbnew, * kbold;
+  register u8 xor = row ^ *row_pointer;
+  register u8 mask;
 
+  *row_pointer++ = row;
+  if (!xor) {
+    scancode += 8;
+    return;
+  }
+
+  for (mask= 1; mask; mask <<= 1) {
+    if (xor & mask)
+      kb_ev(scancode | ((row & mask) ? 0x80 : 0 ));
+
+    ++scancode;
+  }
+}
+
+
+void scan_matrix(void)
+{
+  u8 i;
+  u8 row_sel = inp(0xaa) & 0xf0;
+
+  row_pointer = kbd_matrix;
   scancode = 0;
-  kbnew = (u8 *) NEWKEY, kbold = (u8 *) OLDKEY;
-
   for (i = 0; i < NUMBER_ROW; ++i) {
-    u8 mask = 1;
-    u8 xor = *kbold++ ^ *kbnew;
-
-    if (!xor) {
-      scancode += 8;
-      continue;
-    }
-
-    do {
-      if (xor & mask)
-        kb_ev(scancode, *kbnew & mask);
-
-      ++scancode;
-      ++kbnew;
-    } while (mask <<= 1);
+    outp(0xaa, row_sel | i);
+    scan_row(inp(0xa9));
   }
 }
 

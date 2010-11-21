@@ -9,8 +9,10 @@
 #define KBD_RS232      0x10
 #define KBD_RAW        0x20
 
+void kbd_reset(void);
 u8 is_kbd(u8 test);
 void kbd_rstmode(u8 mask);
 void kbd_setmode(u8 mask);
+void scan_matrix(void);
 
 #endif /* _KBD_H_ */

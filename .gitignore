@@ -1,7 +1,6 @@
 *.o
 *.obj
 *.d
-msxterm
-msxterm.com
+*.com
 TAGS
 
