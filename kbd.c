@@ -1,5 +1,4 @@
 #include <string.h>
-#include <msx.h>
 #include <sys.h>
 
 #include "kbd.h"
@@ -54,13 +53,13 @@ void kbd_setmode(u8 mask)
 
 
 
-static void kb_ev(u8 scancode)
+static void kb_ev(u8 keycode)
 {
-  lastscan_v = scancode;
+  lastscan_v = keycode;
   lastscan_t = 0;
 
   if (mode & KBD_RAW) {
-    put_queue(scancode);
+    put_queue(keycode);
     return;
   }
 
@@ -68,7 +67,7 @@ static void kb_ev(u8 scancode)
 }
 
 
-static u8 scancode;
+static u8 keycode;
 static u8 * row_pointer;
 
 static void scan_row(u8 row)
@@ -78,15 +77,15 @@ static void scan_row(u8 row)
 
   *row_pointer++ = row;
   if (!xor) {
-    scancode += 8;
+    keycode += 8;
     return;
   }
 
   for (mask= 1; mask; mask <<= 1) {
     if (xor & mask)
-      kb_ev(scancode | ((row & mask) ? 0x80 : 0 ));
+      kb_ev(keycode++ | ((row & mask) ? 0x80 : 0));
 
-    ++scancode;
+    ++keycode;
   }
 }
 
@@ -97,7 +96,7 @@ void scan_matrix(void)
   u8 row_sel = inp(0xaa) & 0xf0;
 
   row_pointer = kbd_matrix;
-  scancode = 0;
+  keycode = 0;
   for (i = 0; i < NUMBER_ROW; ++i) {
     outp(0xaa, row_sel | i);
     scan_row(inp(0xa9));
