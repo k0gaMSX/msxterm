@@ -39,9 +39,10 @@ void init_term(void)
   xterm.ncols = 80;
   xterm.mode = VT100_MODE;
   xterm.state = ESnormal;
-
-  for (i = MAXSIZEY + 1, size = 0; --i; size += MAXSIZEX)
+  for (i = MAXSIZEY + 1, size = 0; --i; size += MAXSIZEX) {
     xterm.map_char[i] = xterm.map_char_buf + size;
+    xterm.map_video[i] = xterm.map_video_buf + size;
+  }
 }
 
 
@@ -111,6 +112,7 @@ static void write_char(u16 c)
     vram_next();
 
     xterm.map_char[xterm.xpos][xterm.xpos] = c;
+    xterm.map_video[xterm.ypos][xterm.xpos] = VIDEO(xterm);
     ++xterm.xpos;
   }
 }

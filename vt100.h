@@ -88,6 +88,8 @@ struct term {
 
   u16 * map_char[MAXSIZEY];
   u16 map_char_buf[MAXSIZEY * MAXSIZEX];
+  struct video_att * map_video[MAXSIZEY];
+  struct video_att map_video_buf[MAXSIZEY * MAXSIZEX];
 };
 
 
