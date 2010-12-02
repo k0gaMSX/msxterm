@@ -384,6 +384,36 @@ static void erase_in_line(u8 par1)
 }
 
 
+
+
+
+static void erase_in_display(u8 par1)
+{
+  u16 * start;
+  u16 count;
+
+
+  switch (par1){
+  case 0:
+    start = &xterm.map_char[xterm.y][xterm.x];
+    count = xterm.map_char_buf - start - 1;
+    break;
+  case 1:
+    start = xterm.map_char_buf;
+    count = &xterm.map_char[xterm.y][xterm.x] - start;
+    break;
+  case 2:
+    start = xterm.map_char_buf;
+    count = sizeof(xterm.map_char_buf) >> 1;
+  default:
+    return;
+  }
+
+  memsetw(start,count, 0);
+}
+
+
+
 static void do_gotpars(register u8 c)
 {
   u8 par1 = xterm.pars[0], par2 = xterm.pars[0];
@@ -431,6 +461,9 @@ static void do_gotpars(register u8 c)
 
     case '@':                     /* Insert blank (ICH) */
     case 'J':                     /* Erase in display (ED) */
+      erase_in_display(par1);
+      return;
+
     case 'K':                     /* Erase in line (EL) */
       erase_in_line(par1);
       return;
