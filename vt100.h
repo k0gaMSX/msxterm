@@ -86,7 +86,7 @@ struct term {
   u8 top;
   u8 botton;
 
-  u16 ** map_char;
+  u16 * map_char[MAXSIZEY];
   u16 map_char_buf[MAXSIZEY * MAXSIZEX];
 };
 
