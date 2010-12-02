@@ -7,6 +7,7 @@
 #include "bell.h"
 #include "vram.h"
 #include "kbd.h"
+#include "memory.h"
 static struct term xterm;
 
 
@@ -357,6 +358,32 @@ static void scroll_region(u8 par1, u8 par2)
 }
 
 
+
+static void erase_in_line(u8 par1)
+{
+  u16 * start;
+  u16 count;
+
+  switch (par1){
+  case 0:
+    start = &xterm.map_char[xterm.y][xterm.x];
+    count = MAXSIZEX - xterm.y;
+    break;
+  case 1:
+    start = &xterm.map_char[xterm.y][0];
+    count = xterm.x;
+    break;
+  case 2:
+    start = &xterm.map_char[xterm.y][0];
+    count = MAXSIZEX;
+  default:
+    return;
+  }
+
+  memsetw(start,count, 0);
+}
+
+
 static void do_gotpars(register u8 c)
 {
   u8 par1 = xterm.pars[0], par2 = xterm.pars[0];
@@ -405,6 +432,9 @@ static void do_gotpars(register u8 c)
     case '@':                     /* Insert blank (ICH) */
     case 'J':                     /* Erase in display (ED) */
     case 'K':                     /* Erase in line (EL) */
+      erase_in_line(par1);
+      return;
+
     case 'L':                     /* Insert lines (IL) */
     case 'M':                     /* Delete lines (DL) */
     case 'P':                     /* Delete characters (DCH) */
