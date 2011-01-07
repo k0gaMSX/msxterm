@@ -1,4 +1,4 @@
-SRC = bell.c kbd.c vt100.c vram.c main.c bell.c
+SRC = bell.c kbd.c vt100.c vram.c main.c bell.c memory.c
 OBJ = $(SRC:.c=.obj)
 
 DEPS = $(SRC:.c=.d)
