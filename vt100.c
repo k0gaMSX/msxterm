@@ -14,7 +14,7 @@ static struct term xterm;
 
 #define VIDEO(x) (*(u8 *) &x.video)
 #define VIDEO_S(x) (*(u8 *) &x.video_s)
-
+#define ERASE_CHAR ' '
 
 enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESfunckey,
        EShash, ESsetG0, ESsetG1, ESpercent, ESignore, ESnonstd,
@@ -411,7 +411,7 @@ static void erase_in_display(u8 par1)
     return;
   }
 
-  memsetw(start,count, 0);
+  memsetw(start,count, ERASE_CHAR);
 }
 
 
