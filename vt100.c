@@ -39,6 +39,7 @@ void init_term(void)
   xterm.ncols = 80;
   xterm.mode = VT100_MODE;
   xterm.state = ESnormal;
+  /* TODO: Optimize this loop */
   for (i = MAXSIZEY + 1, size = 0; --i; size += MAXSIZEX) {
     xterm.map_char[i] = xterm.map_char_buf + size;
     xterm.map_video[i] = xterm.map_video_buf + size;
@@ -358,6 +359,31 @@ static void scroll_region(u8 par1, u8 par2)
   }
   return;
 }
+
+
+
+static insert_char(u16 val, u8 count)
+{
+  u8 offset = xterm.ncols - count;
+  u16 * src = xterm.map_char[xterm.ypos] + offset - 1;
+  struct video_att * video = xterm.map_video[xterm.ypos] + offset - 1;
+
+
+  assert(count > 0 && offset > 0);
+  vram_ptr(xterm.ncols - 1, xterm.ypos, xterm.nrows);
+
+  do {
+    vram_write(*src, *video);
+    vram_prev();
+
+    xterm.map_char[xterm.xpos][x] = *src--;
+    xterm.map_video[xterm.ypos][x--] = *video--;
+  } while (--offset);
+
+  vram_ptr(xterm.xpos, xterm.ypos);
+  do write_char(val) while (--count);
+}
+
 
 
 
