@@ -5,9 +5,7 @@
 
 
 #include "types.h"
-
-
-
+#include "vram.h"
 
 #if 0
   unsigned vc_charset        : 1;  /* Character set G0 / G1 */
@@ -51,15 +49,6 @@
 
 
 
-
-struct video_att {
-  /* attribute flags */
-  unsigned bold      : 1;
-  unsigned underline : 1;
-  unsigned reverse   : 1;
-  unsigned bg        : 3;
-  unsigned fg        : 3;
-};
 
 #define NPARS        16
 #define VT100_MODE   1

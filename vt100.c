@@ -10,10 +10,6 @@
 #include "memory.h"
 static struct term xterm;
 
-
-
-#define VIDEO(x) (*(u8 *) &x.video)
-#define VIDEO_S(x) (*(u8 *) &x.video_s)
 #define ERASE_CHAR ' '
 
 enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESfunckey,
@@ -109,11 +105,11 @@ static void ri()
 static void write_char(u16 c)
 {
   if (xterm.xpos < xterm.ncols) {
-    vram_write(c, VIDEO(xterm));
+    vram_write(c, xterm.video);
     vram_next();
 
     xterm.map_char[xterm.xpos][xterm.xpos] = c;
-    xterm.map_video[xterm.ypos][xterm.xpos] = VIDEO(xterm);
+    xterm.map_video[xterm.ypos][xterm.xpos] = xterm.video;
     ++xterm.xpos;
   }
 }
@@ -283,7 +279,7 @@ static void do_SGR(void)
     register u8 par = *ptr++;
       switch (par) {
       case 0:                       /* reset/normal */
-        VIDEO(xterm) = 0;
+        CLEAR_VIDEO(xterm.video);
         return;
 
       case 1:                       /* bold */
@@ -364,7 +360,7 @@ static void scroll_region(u8 par1, u8 par2)
 
 static insert_char(u16 val, u8 count)
 {
-  u8 offset = xterm.ncols - count;
+  u8 offset = xterm.ncols - count, x = xterm.xpos + count;
   u16 * src = xterm.map_char[xterm.ypos] + offset - 1;
   struct video_att * video = xterm.map_video[xterm.ypos] + offset - 1;
 
@@ -380,8 +376,8 @@ static insert_char(u16 val, u8 count)
     xterm.map_video[xterm.ypos][x--] = *video--;
   } while (--offset);
 
-  vram_ptr(xterm.xpos, xterm.ypos);
-  do write_char(val) while (--count);
+  vram_ptr(xterm.xpos, xterm.ypos, xterm.nrows);
+  do write_char(val); while (--count);
 }
 
 
