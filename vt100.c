@@ -368,15 +368,15 @@ static void erase_in_line(u8 par1)
 
   switch (par1){
   case 0:
-    start = &xterm.map_char[xterm.y][xterm.x];
-    count = MAXSIZEX - xterm.y;
+    start = &xterm.map_char[xterm.ypos][xterm.xpos];
+    count = MAXSIZEX - xterm.ypos;
     break;
   case 1:
-    start = &xterm.map_char[xterm.y][0];
-    count = xterm.x;
+    start = &xterm.map_char[xterm.ypos][0];
+    count = xterm.xpos;
     break;
   case 2:
-    start = &xterm.map_char[xterm.y][0];
+    start = &xterm.map_char[xterm.ypos][0];
     count = MAXSIZEX;
   default:
     return;
@@ -397,12 +397,12 @@ static void erase_in_display(u8 par1)
 
   switch (par1){
   case 0:
-    start = &xterm.map_char[xterm.y][xterm.x];
+    start = &xterm.map_char[xterm.ypos][xterm.xpos];
     count = xterm.map_char_buf - start - 1;
     break;
   case 1:
     start = xterm.map_char_buf;
-    count = &xterm.map_char[xterm.y][xterm.x] - start;
+    count = &xterm.map_char[xterm.ypos][xterm.xpos] - start;
     break;
   case 2:
     start = xterm.map_char_buf;
