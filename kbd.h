@@ -7,6 +7,6 @@
 #define VC_APPLIC     3
 #define VC_CRLF       4
 
-u8 is_kbd(u8 test);
+int8_t is_kbd(int8_t test);
 
 #endif /* _KBD_H_ */

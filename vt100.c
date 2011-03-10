@@ -27,8 +27,8 @@ static void reset_terminal(void)
 
 void init_term(void)
 {
-  u8 i;
-  register u16 size;
+  int8_t i;
+  register size_t  size;
 
   xterm.xpos = xterm.ypos = 0;
   xterm.nrows = 24;
@@ -102,7 +102,7 @@ static void ri()
 
 
 
-static void write_char(u16 c)
+static void write_char(uint16_t c)
 {
   if (xterm.xpos < xterm.ncols) {
     vram_write(c, xterm.video);
@@ -141,7 +141,7 @@ static void restore_cur(void)
 
 
 
-static void doESC(u8 c)
+static void doESC(unsigned char c)
 {
   xterm.state = ESnormal;
   switch(c) {
@@ -212,7 +212,7 @@ static void doESC(u8 c)
 
 
 
-static u8 do_square(register u8 c)
+static int8_t do_square(register unsigned char c)
 {
   xterm.question = 0;
   xterm.state = ESgetpars;
@@ -239,7 +239,7 @@ static u8 do_square(register u8 c)
 
 
 
-static u8 do_getpars(register u8 c)
+static int8_t do_getpars(register unsigned char c)
 {
   if (c == ';' && xterm.npars < NPARS) {
     xterm.npars++;
@@ -258,7 +258,7 @@ static u8 do_getpars(register u8 c)
 
 
 
-static void goto_xy(register s8 x, register s8 y)
+static void goto_xy(register int8_t x, register int8_t y)
 {
   if (x < 0)  x = 0;
   else if (x >= xterm.nrows) x = xterm.ncols - 1;
@@ -274,9 +274,9 @@ static void goto_xy(register s8 x, register s8 y)
 
 static void do_SGR(void)
 {
-  u8 * ptr = xterm.pars;
+  uint8_t * ptr = xterm.pars;
   while (xterm.npars--) {
-    register u8 par = *ptr++;
+    register uint8_t par = *ptr++;
       switch (par) {
       case 0:                       /* reset/normal */
         CLEAR_VIDEO(xterm.video);
@@ -343,7 +343,7 @@ static void do_SGR(void)
 
 
 
-static void scroll_region(u8 par1, u8 par2)
+static void scroll_region(uint8_t par1, uint8_t par2)
 {
   if (!par1)  ++par1;
   if (!par2)  par2 = xterm.nrows;
@@ -358,10 +358,10 @@ static void scroll_region(u8 par1, u8 par2)
 
 
 
-static insert_char(u16 val, u8 count)
+static insert_char(int16_t val, uint8_t count)
 {
-  u8 offset = xterm.ncols - count, x = xterm.xpos + count;
-  u16 * src = xterm.map_char[xterm.ypos] + offset - 1;
+  uint8_t offset = xterm.ncols - count, x = xterm.xpos + count;
+  uint16_t * src = xterm.map_char[xterm.ypos] + offset - 1;
   struct video_att * video = xterm.map_video[xterm.ypos] + offset - 1;
 
 
@@ -383,10 +383,10 @@ static insert_char(u16 val, u8 count)
 
 
 
-static void erase_in_line(u8 par1)
+static void erase_in_line(uint8_t par1)
 {
-  u16 * start;
-  u16 count;
+  uint16_t * start;
+  size_t  count;
 
   switch (par1){
   case 0:
@@ -411,10 +411,10 @@ static void erase_in_line(u8 par1)
 
 
 
-static void erase_in_display(u8 par1)
+static void erase_in_display(uint8_t par1)
 {
-  u16 * start;
-  u16 count;
+  uint16_t * start;
+  uint16_t count;
 
 
   switch (par1){
@@ -438,10 +438,10 @@ static void erase_in_display(u8 par1)
 
 
 
-static void do_gotpars(register u8 c)
+static void do_gotpars(register unsigned char  c)
 {
-  u8 par1 = xterm.pars[0], par2 = xterm.pars[0];
-  register s8 x = xterm.xpos, y = xterm.ypos;
+  uint8_t par1 = xterm.pars[0], par2 = xterm.pars[0];
+  register int8_t x = xterm.xpos, y = xterm.ypos;
 
   xterm.state = ESnormal;
   if (!xterm.question) {
@@ -522,7 +522,7 @@ static void do_gotpars(register u8 c)
 }
 
 
-static void do_state(register u8 c)
+static void do_state(register unsigned char c)
 {
   switch (xterm.state) {
   case ESesc:
@@ -557,7 +557,7 @@ static void do_state(register u8 c)
 
 
 
-static void ctrl_codes(register u8 c)
+static void ctrl_codes(register unsigned char c)
 {
   switch (c) {
   case 0x00:
@@ -620,13 +620,13 @@ static void ctrl_codes(register u8 c)
 
 
 
-void term_write (register u16 * buf, register int count)
+void term_write (register uint16_t * buf, register uint8_t count)
 {
   assert(count && buf);
   hide_cursor();
 
   do {
-    register u16 c = *buf++;
+    register int16_t c = *buf++;
 
     if (xterm.state != ESnormal || c < 0x20 || c == 0x9b)
       ctrl_codes(c);

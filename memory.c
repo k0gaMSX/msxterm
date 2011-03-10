@@ -1,9 +1,11 @@
 #include "memory.h"
 
 
-void memsetw(u16 * start, size_t count, u16 value)
+void memsetw(void * start, size_t count, int16_t value)
 {
+  uint16_t *aux = start;
+
   while (count--)
-    *start++ = value;
+    *aux++ = value;
 }
 

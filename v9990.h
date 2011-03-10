@@ -4,7 +4,7 @@
 #include "types.h"
 
 
-extern void setpal(const u8 * pal);
+extern void setpal(const uint8_t * pal);
 extern void vdp_init(void);
 extern void setspd(void);
 extern void resetspd(void);

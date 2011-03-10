@@ -16,14 +16,14 @@ void vram_next(void)
 
 
 
-void vram_ptr(u8 x, u8 y, u8 nrows)
+void vram_ptr(uint8_t x, uint8_t y, uint8_t nrows)
 {
 }
 
 
 
 
-void vram_write(u16 c, struct video_att att)
+void vram_write(int16_t c, struct video_att att)
 {
 }
 

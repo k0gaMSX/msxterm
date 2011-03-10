@@ -1,7 +1,7 @@
 #include "kbd.h"
 
 
-u8 is_kbd(u8 test)
+int8_t is_kbd(int8_t test)
 {
   return 1;
 }
