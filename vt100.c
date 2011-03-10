@@ -105,8 +105,8 @@ static void ri()
 static void write_char(uint16_t c)
 {
   if (xterm.xpos < xterm.ncols) {
-    vram_write(c, xterm.video);
-    vram_next();
+    write_vram(c, xterm.video);
+    next_vram();
 
     xterm.map_char[xterm.xpos][xterm.xpos] = c;
     xterm.map_video[xterm.ypos][xterm.xpos] = xterm.video;
@@ -366,17 +366,17 @@ static insert_char(int16_t val, uint8_t count)
 
 
   assert(count > 0 && offset > 0);
-  vram_ptr(xterm.ncols - 1, xterm.ypos, xterm.nrows);
+  ptr_vram(xterm.ncols - 1, xterm.ypos, xterm.nrows);
 
   do {
-    vram_write(*src, *video);
-    vram_prev();
+    write_vram(*src, *video);
+    prev_vram();
 
     xterm.map_char[xterm.xpos][x] = *src--;
     xterm.map_video[xterm.ypos][x--] = *video--;
   } while (--offset);
 
-  vram_ptr(xterm.xpos, xterm.ypos, xterm.nrows);
+  ptr_vram(xterm.xpos, xterm.ypos, xterm.nrows);
   do write_char(val); while (--count);
 }
 
@@ -612,7 +612,7 @@ static void ctrl_codes(register unsigned char c)
     return;
 
  act_ptr:
-  vram_ptr(xterm.xpos, xterm.ypos, xterm.nrows);
+  ptr_vram(xterm.xpos, xterm.ypos, xterm.nrows);
 }
 
 

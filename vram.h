@@ -16,11 +16,16 @@ struct video_att {
 #define CLEAR_VIDEO(x) (*(uint16_t *)&(x) = 0)
 #define CLEAR_VIDEO_S(x) (*(uint16_t *)&(x) = 0)
 
-void vram_prev(void);
-void vram_next(void);
-void vram_ptr(uint8_t x, uint8_t y, uint8_t nrows);
-
-void vram_write(int16_t c, struct video_att att);
+void prev_vram(void);
+void next_vram(void);
+void ptr_vram(uint8_t x, uint8_t y, uint8_t nrows);
+void write_vram(int16_t c, struct video_att att);
 void hide_cursor(void);
 void enable_cursor(void);
+uint8_t get_height_glyph(void);
+void read_glyphs(uint8_t *buf_font);
+void set_height_glyph(uint8_t height);
+void reset_glyphs_ptr(void);
+void write_glyphs(uint8_t *buf_font);
+
 #endif /* _VRAM_H_ */

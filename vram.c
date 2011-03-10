@@ -4,26 +4,26 @@
 
 
 
-void vram_prev(void)
+void prev_vram(void)
 {
 }
 
 
-void vram_next(void)
-{
-}
-
-
-
-
-void vram_ptr(uint8_t x, uint8_t y, uint8_t nrows)
+void next_vram(void)
 {
 }
 
 
 
 
-void vram_write(int16_t c, struct video_att att)
+void ptr_vram(uint8_t x, uint8_t y, uint8_t nrows)
+{
+}
+
+
+
+
+void write_vram(int16_t c, struct video_att att)
 {
 }
 
