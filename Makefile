@@ -49,8 +49,9 @@ distclean: clean
 
 clean:
 	rm -f *.obj
-	rm -f msxterm
 	rm -f TAGS
+	rm -f *.crf
+	rm -f $(BIN)
 
 
 
