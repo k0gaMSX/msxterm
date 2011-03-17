@@ -137,7 +137,8 @@ int8_t read_glyphs(uint8_t *buf_font)
 
 void write_glyphs(uint8_t *buf_font, uint8_t height)
 {
-  uint8_t i, j;
+  static uint8_t i;
+  static const int8_t zero[16];
 
   assert(buf_font);
   assert(height >= 8 && height <= 16);
@@ -145,13 +146,11 @@ void write_glyphs(uint8_t *buf_font, uint8_t height)
   vwrite_ad(FONT_ADDRESS);
 
   do {
-    for (j = height; j != 0; --j) {
-      register uint8_t byte = *buf_font++, k;
-      for (k = 8; k != 0; --k) {
-        outp(V9990_VRAM_PORT, byte & 1);
-        byte >>= 1;
-      }
-    }
+    ldirvm(buf_font, height);
+    if (height != 16)    ldirvm(zero, 16 - height);
+
+    ldirvm(zero, 16);
+    buf_font += 16;
   } while (--i);                /* 256 times using only a byte */
 
   ei();
