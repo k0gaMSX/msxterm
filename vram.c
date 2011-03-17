@@ -9,7 +9,7 @@
 #define FONT_OFFSET          0x8000
 #define FONT_ADDRESS         (((uint32_t) FONT_PAGE << 16) |  FONT_OFFSET)
 #define HEIGHT_ADDRESS       0x6ffff
-
+#define MAX_COLUMN           80
 
 static uint16_t vram_x, vram_y, vram_height;
 
@@ -40,6 +40,10 @@ void prev_vram(void)
 
 void next_vram(void)
 {
+  if ((vram_x += 8) > MAX_COLUMN * 8) {
+    vram_x = 0;
+    vram_y += vram_height;
+  }
 }
 
 
@@ -59,6 +63,39 @@ void ptr_vram(uint8_t x, uint8_t y)
 
 void write_vram(uint16_t c, struct video_att att)
 {
+  static struct CMMMpars CMMM = {
+    0, 0,
+    0, FONT_PAGE,
+    0, 0,
+    8, 0,
+    0, V9990_LOGIC_IMP,
+    0xffff,
+    0x3333,0x5555,
+    V9990_OP_CMMM
+  };
+
+  uint16_t offset = FONT_OFFSET + c * 32;
+
+  assert(c < 256);
+
+  CMMM.sa_off1 = offset & 0xff;
+  CMMM.sa_off2 = (offset >> 8) & 0xff;
+  CMMM.dx = vram_x;
+  CMMM.dy = vram_y;
+  CMMM.ny = vram_height;
+
+  CMMM.bg = att.bg;
+  CMMM.bg |= CMMM.bg << 4;
+  CMMM.bg |= CMMM.bg << 8;
+
+  CMMM.fg = att.fg;
+  CMMM.fg |= CMMM.fg << 4;
+  CMMM.fg |= CMMM.fg << 8;
+
+  di();
+  waitce();
+  v9990cmd(&CMMM);
+  ei();
 }
 
 
