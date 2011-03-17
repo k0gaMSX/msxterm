@@ -302,45 +302,46 @@ static void do_SGR(void)
       switch (par) {
       case 0:                       /* reset/normal */
         CLEAR_VIDEO(xterm.video);
-        return;
+        break;
 
       case 1:                       /* bold */
         xterm.video.bold = 1;
-        return;
+        break;
 
       case 2:                       /* Faint */
         xterm.video.bold = 1;
-        return;
+        break;
 
       case 4:                       /* underline */
         xterm.video.underline = 1;
-        return;
+        break;
 
       case 7:                       /* reverse video */
         xterm.video.reverse = 1;
-        return;
+        break;
 
       case 22:                      /* not bold */
         xterm.video.bold = 0;
-        return;
+        break;
 
       case 24:                      /* not underline */
         xterm.video.underline = 0;
-        return;
+        break;;
 
       case 27:                      /* positive video */
         xterm.video.reverse = 0;
-        return;
+        break;
+
 
       case 38:                      /* ANSI X3.64-1979 (SCO-ish?) */
         xterm.video.underline = 1;  /* Enable underline and white foreground */
         xterm.video.fg = 7;
-        return;
+        break;
 
       case 39:                           /* ANSI X3.64-1979 (SCO-ish?) */
         xterm.video.underline = 0;       /* Disable underline and default */
         xterm.video.fg = xterm.bg_color; /* foreground */
-        return;
+        break;;
 
       case 49:
       default:
@@ -348,15 +349,14 @@ static void do_SGR(void)
           /* TODO: selecting font */
         }
 
-
         if (par >= 30 && par <= 37) {
           xterm.video.fg = par - 30;
-          return;
+          break;
         }
 
         if (par >= 40 && par <= 47) {
           xterm.video.bg = par - 40;
-          return;
+          break;
         }
       }
   }
