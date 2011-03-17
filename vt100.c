@@ -40,6 +40,8 @@ void init_term(void)
     xterm.map_char[i] = xterm.map_char_buf + size;
     xterm.map_video[i] = xterm.map_video_buf + size;
   }
+
+  ptr_vram(0, 0);
 }
 
 
@@ -366,7 +368,7 @@ static insert_char(int16_t val, uint8_t count)
 
 
   assert(count > 0 && offset > 0);
-  ptr_vram(xterm.ncols - 1, xterm.ypos, xterm.nrows);
+  ptr_vram(xterm.ncols - 1, xterm.ypos);
 
   do {
     write_vram(*src, *video);
@@ -376,7 +378,7 @@ static insert_char(int16_t val, uint8_t count)
     xterm.map_video[xterm.ypos][x--] = *video--;
   } while (--offset);
 
-  ptr_vram(xterm.xpos, xterm.ypos, xterm.nrows);
+  ptr_vram(xterm.xpos, xterm.ypos);
   do write_char(val); while (--count);
 }
 
@@ -612,7 +614,7 @@ static void ctrl_codes(register unsigned char c)
     return;
 
  act_ptr:
-  ptr_vram(xterm.xpos, xterm.ypos, xterm.nrows);
+  ptr_vram(xterm.xpos, xterm.ypos);
 }
 
 

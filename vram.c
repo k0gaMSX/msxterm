@@ -10,6 +10,7 @@
 #define FONTS_ADDRESS        0
 #define HEIGHT_ADDRESS       0xffff
 
+static uint16_t vram_x, vram_y, vram_height;
 
 
 void prev_vram(void)
@@ -24,8 +25,14 @@ void next_vram(void)
 
 
 
-void ptr_vram(uint8_t x, uint8_t y, uint8_t nrows)
+void ptr_vram(uint8_t x, uint8_t y)
 {
+  assert(x < 1024/8 &&  y < 256/8);
+  di();
+  vram_x = x * 8;
+  vram_height = get_height_glyph();
+  vram_y = y * vram_height;
+  ei();
 }
 
 
