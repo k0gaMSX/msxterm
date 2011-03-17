@@ -12,9 +12,9 @@ static struct term xterm;
 
 #define ERASE_CHAR '\0'
 
-enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESfunckey,
-       EShash, ESsetG0, ESsetG1, ESpercent, ESignore, ESnonstd,
-       ESpalette };
+enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESinpars,
+       ESfunckey, EShash, ESsetG0, ESsetG1, ESpercent, ESignore,
+       ESnonstd, ESpalette };
 
 
 #define DEFAULT_BG_COLOR 0
@@ -265,18 +265,21 @@ static int8_t do_getpars(register unsigned char c)
 {
   if (c == ';' && xterm.npars < NPARS) {
     xterm.npars++;
+    xterm.state = ESgetpars;
     return 1;
   } else if (isdigit(c)) {
     xterm.pars[xterm.npars] *= 10;
     xterm.pars[xterm.npars] += c - '0';
+    xterm.state = ESinpars;
     return 1;
   } else {
+    if (xterm.state == ESinpars)
+      ++xterm.npars;
     xterm.state = ESgotpars;
   }
 
   return 0;                     /* return 0 if code wasn't consumed */
 }
-
 
 
 
@@ -555,6 +558,7 @@ static void do_state(register unsigned char c)
     if (do_square(c))
       return;
 
+  case ESinpars:
   case ESgetpars:
     if (do_getpars(c))
       return;
