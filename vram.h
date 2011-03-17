@@ -19,12 +19,12 @@ struct video_att {
 void prev_vram(void);
 void next_vram(void);
 void ptr_vram(uint8_t x, uint8_t y);
-void write_vram(int16_t c, struct video_att att);
+void write_vram(uint16_t c, struct video_att att);
 void hide_cursor(void);
 void enable_cursor(void);
 uint8_t get_height_glyph(void);
 void set_height_glyph(uint8_t height);
-void write_glyphs(uint8_t *buf_font, int8_t height);
+void write_glyphs(uint8_t *buf_font, uint8_t height);
 int8_t read_glyphs(uint8_t *buf_font);
 
 #endif /* _VRAM_H_ */

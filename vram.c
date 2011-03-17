@@ -38,8 +38,7 @@ void ptr_vram(uint8_t x, uint8_t y)
 
 
 
-
-void write_vram(int16_t c, struct video_att att)
+void write_vram(uint16_t c, struct video_att att)
 {
 }
 
@@ -115,7 +114,8 @@ int8_t read_glyphs(uint8_t *buf_font)
  * of 8xheight size
  **/
 
-void write_glyphs(uint8_t *buf_font, int8_t height)
+
+void write_glyphs(uint8_t *buf_font, uint8_t height)
 {
   uint8_t i, j;
 
