@@ -102,11 +102,18 @@ void write_vram(uint16_t c, struct video_att att)
 
 void hide_cursor(void)
 {
+  di();
+  resetspd();
+  ei();
 }
 
 
 void enable_cursor(void)
 {
+  di();
+  setspd();
+  set_cursor_pos(vram_x, vram_y);
+  ei();
 }
 
 
