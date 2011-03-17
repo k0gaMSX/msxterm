@@ -1,6 +1,6 @@
 MSXTERM_OBJS = 	bell.obj kbd.obj vt100.obj \
 		vram.obj main.obj bell.obj \
-		memory.obj v9990.obj hitech.obj
+		v9990.obj hitech.obj
 
 CONSOLECHARS_OBJS = conchar.obj vram.obj v9990.obj vram.obj hitech.obj
 

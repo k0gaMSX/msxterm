@@ -7,10 +7,10 @@
 #include "bell.h"
 #include "vram.h"
 #include "kbd.h"
-#include "memory.h"
+
 static struct term xterm;
 
-#define ERASE_CHAR ' '
+#define ERASE_CHAR '\0'
 
 enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESfunckey,
        EShash, ESsetG0, ESsetG1, ESpercent, ESignore, ESnonstd,
@@ -238,7 +238,7 @@ static int8_t do_square(register unsigned char c)
 {
   xterm.question = 0;
   xterm.state = ESgetpars;
-  memset(xterm.pars, 0, NPARS);
+  memset(xterm.pars, 0, sizeof(xterm.pars));
   xterm.npars = 0;
 
   if (c == '[') {
@@ -426,7 +426,7 @@ static void erase_in_line(uint8_t par1)
     return;
   }
 
-  memsetw(start,count, 0);
+  memset(start, ERASE_CHAR, count * sizeof(*start));
 }
 
 
@@ -455,7 +455,7 @@ static void erase_in_display(uint8_t par1)
     return;
   }
 
-  memsetw(start,count, ERASE_CHAR);
+  memset(start, ERASE_CHAR, count * sizeof(*start));
 }
 
 
