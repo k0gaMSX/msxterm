@@ -14,7 +14,6 @@ struct video_att {
 };
 
 #define CLEAR_VIDEO(x) (*(uint16_t *)&(x) = 0)
-#define CLEAR_VIDEO_S(x) (*(uint16_t *)&(x) = 0)
 
 void prev_vram(void);
 void next_vram(void);
