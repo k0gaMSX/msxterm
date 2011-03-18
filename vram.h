@@ -26,5 +26,5 @@ uint8_t get_height_glyph(void);
 void set_height_glyph(uint8_t height);
 void write_glyphs(uint8_t *buf_font, uint8_t height);
 int8_t read_glyphs(uint8_t *buf_font);
-
+void clean_vram(void);
 #endif /* _VRAM_H_ */

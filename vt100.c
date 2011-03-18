@@ -17,11 +17,29 @@ enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESfunckey,
        ESpalette };
 
 
-
+#define DEFAULT_BG_COLOR 0
+#define DEFAULT_FG_COLOR 7
 
 static void reset_terminal(void)
 {
-  /* TODO: Implement reset terminal */
+  clean_vram();
+  xterm.xpos = xterm.ypos = 0;
+  CLEAR_VIDEO(xterm.video);
+  xterm.video.fg = xterm.fg_color;
+  xterm.video.bg = xterm.bg_color;
+  xterm.video_s = xterm.video;
+  ptr_vram(0, 0);
+  {uint16_t **bp;
+   for (bp  = xterm.map_char; bp < xterm.map_char + MAXSIZEY; ++bp)
+     memset(*bp, MAXSIZEX * sizeof(*bp), ERASE_CHAR);
+  }
+  {struct video_att **bp;
+   for (bp = xterm.map_video; bp < xterm.map_video + MAXSIZEY; ++bp)
+     memset(*bp, MAXSIZEX * sizeof(*bp), 0);
+  }
+
+  xterm.state = ESnormal;
+  enable_cursor();
 }
 
 
@@ -35,6 +53,8 @@ void init_term(void)
   xterm.ncols = 80;
   xterm.mode = VT100_MODE;
   xterm.state = ESnormal;
+  xterm.bg_color = DEFAULT_BG_COLOR;
+  xterm.fg_color = DEFAULT_FG_COLOR;
 
   for (i = size = 0; i < MAXSIZEY; ++i, size += MAXSIZEX) {
     xterm.map_char[i] = xterm.map_char_buf + size;

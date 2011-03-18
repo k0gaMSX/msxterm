@@ -14,6 +14,25 @@
 static uint16_t vram_x, vram_y, vram_height;
 
 
+void clean_vram(void)
+{
+  struct LMMVpars LMMV = {
+    0,
+    0, 0,
+    1024, 212,
+    0, V9990_LOGIC_IMP,
+    0xffff,
+    0, 0,
+    V9990_OP_LMMV
+  };
+
+  di();
+  waitce();
+  v9990cmd(&LMMV);
+  ei();
+}
+
+
 void prev_vram(void)
 {
 }
