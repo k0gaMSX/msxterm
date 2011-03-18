@@ -1,19 +1,29 @@
-SRC = bell.c kbd.c vt100.c vram.c main.c bell.c memory.c
-OBJ = $(SRC:.c=.obj) v9990.obj
+MSXTERM_OBJS = 	bell.obj kbd.obj vt100.obj \
+		vram.obj main.obj bell.obj \
+		memory.obj v9990.obj
 
-DEPS = $(SRC:.c=.d)
+CONSOLECHARS_OBJS = conchar.obj vram.obj v9990.obj vram.obj
+
+BIN = msxterm.com conchar.com
+
+DEPS = $(MSXTERM_OBJS:.obj=.d)
+DEPS += $(CONSOLECHARS_OBJS:.obj=.d)
+
 LIBS =
 DEP = gcc
 CC = zc
 AS = zas
-CFLAGS = -CPM
+CFLAGS = -CPM -Zg3 -W-3 -P8
 ASFLAGS =
 LDFLAGS = -CPM
 
-all:	msxterm
+all: $(BIN)
+
+conchar.com: $(CONSOLECHARS_OBJS)
+	$(CC)  $(LDFLAGS) $^ $(LIBS) -O$@
 
 
-msxterm:  $(OBJ)
+msxterm.com:  $(MSXTERM_OBJS)
 	$(CC)  $(LDFLAGS) $^ $(LIBS) -O$@
 
 

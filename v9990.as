@@ -1,4 +1,4 @@
-
+; -*- mode: asm -*-
 
 VRAM_PORT            equ 060h
 PALETTE_PORT         equ 061h
@@ -51,6 +51,99 @@ CURSOR_SIZE       equ     080h
        global  small_model
        psect   text,class=CODE
 
+
+
+
+
+;;; _vread_ad: Store memory page of vram for reading
+;;; input: de <- address memory
+;;;        c <- page
+
+        psect   text
+        global  _vread_ad
+        signat  _vread_ad,8248
+_vread_ad:
+        ld      a,VRAM_READ_REG
+        jr      memory_pointer
+
+
+;;; _vwrite_ad: Store memory page of vram for writing
+;;; input: de <- address memory
+;;;        c <- page
+
+        psect   text
+
+        global  _vwrite_ad
+        signat  _vwrite_ad,8248
+
+_vwrite_ad:
+        ld      a,VRAM_WRITE_REG
+
+memory_pointer:
+        di
+        out     (SELECT_PORT),a
+        ld      a,e
+        out     (DATA_PORT),a
+        ld      a,d
+        out     (DATA_PORT),a
+        ld      a,c
+        out     (DATA_PORT),a
+        ret
+
+
+;;; _ldirmv: read a memory block from vram. Vram memory must be set
+;;; before calling this function
+;;; input: de <- destiny memory address
+;;;        bc <- count
+
+        psect   text
+        global  _ldirmv
+        signat  _ldirmv,8248
+
+_ldirmv:
+        ex      de,hl
+        xor     a
+        or      b
+        jp      nz,1f
+        inc     b
+
+1:      push    bc
+        ld      b,c
+        ld      c,VRAM_PORT
+        inir
+        pop     bc
+        ld      c,0
+        djnz    1b
+        ret
+
+
+;;; _ldirvm: write a memory block to vram. Vram memory must be set
+;;; before calling this function
+;;; input: de <- source memory address
+;;;        bc <- count
+
+        psect   text
+        global  _ldirvm
+        signat  _ldirvm,8248
+
+_ldirvm:
+        ex      de,hl
+        xor     a
+        or      b
+        jp      nz,1f
+        inc     b
+
+1:      push    bc
+        ld      b,c
+        ld      c,VRAM_PORT
+        otir
+        pop     bc
+        ld      c,0
+        djnz    1b
+        ret
+
+
+
 ;;; _lmmv: Logical move to memoory from CPU
 ;;; input: de <- command data for LMMV
        psect   text
@@ -59,11 +152,6 @@ lmmv:
        ld a,DS_X_REG
        out (SELECT_PORT),a
        ld bc,011h*256 + DATA_PORT
-
-1:     in a,(STATUS_PORT)
-       rrca
-       jr c,1b
-
        otir
        ret
 
@@ -195,30 +283,30 @@ reset:
 
         psect   text
 setmode:
-       di
-       ld      a,SCRMODE0_REG     ;DSPM = 2,  DCKM = 2, XIMM = 2, CLRM = 1
-       out     (SELECT_PORT),a
-       ld      a,0a9h
-       out     (DATA_PORT),a
+        di
+        ld      a,SCRMODE0_REG     ;DSPM = 2,  DCKM = 2, XIMM = 2, CLRM = 1
+        out     (SELECT_PORT),a
+        ld      a,0a9h
+        out     (DATA_PORT),a
 
-       ld      a,SCRMODE1_REG     ;C25M   = SM1 = SM = PAL = EO = IL = HSCN = 0
-       out     (SELECT_PORT),a
-       xor     a
-       out     (DATA_PORT),a
+        ld      a,SCRMODE1_REG     ;C25M   = SM1 = SM = PAL = EO = IL = HSCN = 0
+        out     (SELECT_PORT),a
+        xor     a
+        out     (DATA_PORT),a
 
-       ld      a,01h              ;MCS = 1
-       out     (CONTROL_PORT),a
+        ld      a,01h              ;MCS = 1
+        out     (CONTROL_PORT),a
 
-       ld      a,PALETTE_CTRL_REG ;PLT5-0 = PLTM = PLTAIH = YAE = PLTM = 0
-       out     (SELECT_PORT),a
-       xor     a
-       out     (DATA_PORT),a
+        ld      a,PALETTE_CTRL_REG ;PLT5-0 = PLTM = PLTAIH = YAE = PLTM = 0
+        out     (SELECT_PORT),a
+        xor     a
+        out     (DATA_PORT),a
 
-       ld      a,BACKDROP_REG     ;BACKDROP_COLOR = 0
-       out     (SELECT_PORT),a
-       xor     a
-       out     (DATA_PORT),a
-       ret
+        ld      a,BACKDROP_REG     ;BACKDROP_COLOR = 0
+        out     (SELECT_PORT),a
+        xor     a
+        out     (DATA_PORT),a
+        ret
 
 
 ;;; setcolors:  Set a number of colors into the pallete
@@ -248,6 +336,7 @@ setcolors:
 ;;; _setpal: Sets a 16 colors pallete
 ;;; Input: de <- pointer to the pallete
 
+        psect   text
         global  _setpal
         signat  _setpal,4152
 _setpal:
@@ -300,9 +389,9 @@ set_cursor_pattern:
 ;;; Input: bc <- y pos
 ;;;        de <- x pos
 
+        psect   text
         global  _set_cursor_pos
         signat  _set_cursor_pos,8248
-        psect   text
 _set_cursor_pos:
         di
         ld      a,VRAM_WRITE_REG        ;writing in 007fe00h VRAM address
@@ -345,9 +434,9 @@ setcspo:
 
 
 
+        psect   text
         global  _setspd
         signat  _setspd,24
-        psect   text
 _setspd:
         di
         ld      a,CONTROL_REG + 0c0h
@@ -359,12 +448,12 @@ _setspd:
 
 
 
+        psect   text
         global  _resetspd
         signat  _resetspd,24
-        psect   text
 _resetspd:
         di
-        ld      a,CONTROL_REG
+        ld      a,CONTROL_REG + 0c0h
         out     (SELECT_PORT),a
         in      a,(DATA_PORT)
         or      040h             ;set b6 (SPD bit)
@@ -372,77 +461,68 @@ _resetspd:
         ret
 
         psect   text
-waitce:
-       in       a,(STATUS_PORT)
-       rrca
-       ret      nc
-       jr       waitce
+        global  _waitce
+        signat  _waitce,24
+_waitce:
+        in       a,(STATUS_PORT)
+        rrca
+        ret      nc
+        jr       _waitce
 
 ;;;
 ;;;  Reset v9990 chip to a know state, set B4 mode, load default pallete, load
 ;;;  cursor pattern and set initial cursor coordenate
 
 
-       psect   const,class=CODE
-       psect   const
+        psect   const,class=CODE
+        psect   const
 pallete:
-       db    0,0,0,    31,0,0,    0,31,0,    31,31,0
-       db    0,0,31,   31,0,31,   0,31,31,   16,16,16
-       db    31,31,31, 31,31,31,  31,31,31,  31,31,31
-       db    31,31,31, 31,31,31,  31,31,31,  31,31,31
+        db    0,0,0,    31,0,0,    0,31,0,    31,31,0
+        db    0,0,31,   31,0,31,   0,31,31,   16,16,16
+        db    31,31,31, 31,31,31,  31,31,31,  31,31,31
+        db    31,31,31, 31,31,31,  31,31,31,  31,31,31
 
 cursor:
-       db   0ffh,0,0,0
-       db   0ffh,0,0,0
-       db   0ffh,0,0,0
-       db   0ffh,0,0,0
-       db   0ffh,0,0,0
-       db   0ffh,0,0,0
-       db   0ffh,0,0,0
-       db   0ffh,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
-       db   0,0,0,0
+        db   0ffh,0,0,0
+        db   0ffh,0,0,0
+        db   0ffh,0,0,0
+        db   0ffh,0,0,0
+        db   0ffh,0,0,0
+        db   0ffh,0,0,0
+        db   0ffh,0,0,0
+        db   0ffh,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
+        db   0,0,0,0
 
 
-lmmv_data:
-        db    0,0,0,0
-        db    0,3,0,8
-        db    0,0ch,0ffh, 0ffh
-        db    0,0,0,0
-        db    020h
-
-
+        psect   text
         global  _vdp_init
         signat  _vdp_init,24
-        psect   text
 _vdp_init:
         call    reset           ;reset the chip
         call    setmode
-        ld      hl,lmmv_data
-        call    lmmv           ;Clear the whole screen
-        call    waitce          ;and wait command completion
 
         ld      de,pallete      ;set default pallete
         call    _setpal

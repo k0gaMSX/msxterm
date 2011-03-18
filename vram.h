@@ -23,9 +23,8 @@ void write_vram(int16_t c, struct video_att att);
 void hide_cursor(void);
 void enable_cursor(void);
 uint8_t get_height_glyph(void);
-void read_glyphs(uint8_t *buf_font);
 void set_height_glyph(uint8_t height);
-void reset_glyphs_ptr(void);
-void write_glyphs(uint8_t *buf_font);
+void write_glyphs(uint8_t *buf_font, int8_t height);
+int8_t read_glyphs(uint8_t *buf_font);
 
 #endif /* _VRAM_H_ */
