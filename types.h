@@ -10,6 +10,9 @@
 
   typedef unsigned short uint16_t;
   typedef signed short int16_t;
+
+  typedef unsigned long uint32_t;
+  typedef unsigned long int32_t;
 #endif
 
 #endif /* _TYPES_H_ */

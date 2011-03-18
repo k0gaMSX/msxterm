@@ -5,10 +5,11 @@
 #include "vram.h"
 #include "v9990.h"
 
+#define FONT_PAGE            0x06
+#define FONT_OFFSET          0x8000
+#define FONT_ADDRESS         (((uint32_t) FONT_PAGE << 16) |  FONT_OFFSET)
+#define HEIGHT_ADDRESS       0x6ffff
 
-#define FONT_PAGE            6
-#define FONTS_ADDRESS        0
-#define HEIGHT_ADDRESS       0xffff
 
 static uint16_t vram_x, vram_y, vram_height;
 
@@ -58,7 +59,7 @@ void enable_cursor(void)
 void set_height_glyph(uint8_t height)
 {
 
-  vwrite_ad(HEIGHT_ADDRESS, FONT_PAGE);
+  vwrite_ad(HEIGHT_ADDRESS);
   outp(V9990_VRAM_PORT, height);
   ei();
 
@@ -69,7 +70,7 @@ void set_height_glyph(uint8_t height)
 uint8_t get_height_glyph(void)
 {
   register uint8_t ret;
-  vread_ad(HEIGHT_ADDRESS, FONT_PAGE);
+  vread_ad(HEIGHT_ADDRESS);
   ret = inp(V9990_VRAM_PORT);
   ei();
 
@@ -90,7 +91,7 @@ int8_t read_glyphs(uint8_t *buf_font)
 
   assert(buf_font);
   assert(height >= 8 && height <= 32);
-  vread_ad(FONTS_ADDRESS, FONT_PAGE), i = 0;
+  vread_ad(FONT_ADDRESS);
   do {
     for (j = height; j != 0; --j) {
       register uint8_t byte = 0, k;
@@ -121,7 +122,8 @@ void write_glyphs(uint8_t *buf_font, int8_t height)
   assert(buf_font);
   assert(height >= 8 && height <= 32);
   set_height_glyph(height);
-  vwrite_ad(FONTS_ADDRESS, FONT_PAGE), i = 0;
+  vwrite_ad(FONT_ADDRESS);
+
   do {
     for (j = height; j != 0; --j) {
       register uint8_t byte = *buf_font++, k;

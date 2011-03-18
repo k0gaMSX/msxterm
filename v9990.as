@@ -40,28 +40,25 @@ PALETTE_PTR_REG      equ 14
 BACKDROP_REG         equ 15
 ADJUST_REG           equ 16
 CURSOR_OFFSET_REG    equ 28
-DS_X_REG             equ 36
+COMMAND_PARS_REG     equ 32
+NUMBER_OF_PARS       equ 21
 OPCODE_REG           equ 52
+
 
 
 
 CURSOR_SIZE       equ     080h
 
 
-       global  small_model
-       psect   text,class=CODE
-
-
-
-
-
+        global  small_model
+        psect   text,class=CODE
 ;;; _vread_ad: Store memory page of vram for reading
 ;;; input: de <- address memory
 ;;;        c <- page
 
         psect   text
         global  _vread_ad
-        signat  _vread_ad,8248
+        signat  _vread_ad,4152
 _vread_ad:
         ld      a,VRAM_READ_REG
         jr      memory_pointer
@@ -74,7 +71,7 @@ _vread_ad:
         psect   text
 
         global  _vwrite_ad
-        signat  _vwrite_ad,8248
+        signat  _vwrite_ad,4152
 
 _vwrite_ad:
         ld      a,VRAM_WRITE_REG
@@ -82,13 +79,14 @@ _vwrite_ad:
 memory_pointer:
         di
         out     (SELECT_PORT),a
-        ld      a,e
-        out     (DATA_PORT),a
-        ld      a,d
-        out     (DATA_PORT),a
-        ld      a,c
-        out     (DATA_PORT),a
-        ret
+        ld      c,DATA_PORT
+        pop     hl              ;get return address
+        pop     de              ;get lower part
+        out     (c),e
+        out     (c),d
+        pop     de              ;get upper part
+        out     (c),e
+        jp      (hl)            ;return
 
 
 ;;; _ldirmv: read a memory block from vram. Vram memory must be set
@@ -102,105 +100,90 @@ memory_pointer:
 
 _ldirmv:
         ex      de,hl
-        xor     a
-        or      b
-        jp      nz,1f
-        inc     b
-
-1:      push    bc
         ld      b,c
         ld      c,VRAM_PORT
         inir
-        pop     bc
-        ld      c,0
-        djnz    1b
         ret
+
 
 
 ;;; _ldirvm: write a memory block to vram. Vram memory must be set
 ;;; before calling this function
 ;;; input: de <- source memory address
-;;;        bc <- count
+;;;        c <- count
 
         psect   text
         global  _ldirvm
         signat  _ldirvm,8248
-
 _ldirvm:
         ex      de,hl
-        xor     a
-        or      b
-        jp      nz,1f
-        inc     b
-
-1:      push    bc
         ld      b,c
         ld      c,VRAM_PORT
         otir
-        pop     bc
-        ld      c,0
-        djnz    1b
         ret
 
 
 
-;;; _lmmv: Logical move to memoory from CPU
+;;; _lmmv: Logical move to memory from CPU
 ;;; input: de <- command data for LMMV
-       psect   text
-lmmv:
-       di
-       ld a,DS_X_REG
-       out (SELECT_PORT),a
-       ld bc,011h*256 + DATA_PORT
-       otir
-       ret
+        psect   text
+        global  _v9990cmd
+        signat  _v9990cmd,4152
+_v9990cmd:
+        ex      de,hl
+        ld      a,COMMAND_PARS_REG
+        di
+        out     (SELECT_PORT),a
+        ld      bc,NUMBER_OF_PARS*256 + DATA_PORT
+        otir
+        ret
 
 
-;;; _reset:  Reset the v9990 chip to a know state
+;;; _reset:  Reset the v9990 chip to a known state
 
         psect   text
 reset:
-       di
-       ld      a,ADJUST_REG         ;Save adjust value
-       out     (SELECT_PORT),a
-       in      a,(DATA_PORT)
-       ld      b,a
+        di
+        ld      a,ADJUST_REG         ;Save adjust value
+        out     (SELECT_PORT),a
+        in      a,(DATA_PORT)
+        ld      b,a
 
-       ld      a,02h               ;set reset state
-       out     (CONTROL_PORT),a
-       xor     a                   ;clear reset state
-       out     (CONTROL_PORT),a
+        ld      a,02h               ;set reset state
+        out     (CONTROL_PORT),a
+        xor     a                   ;clear reset state
+        out     (CONTROL_PORT),a
 
-       ld      a,ADJUST_REG        ;restore adjust value
-       out     (SELECT_PORT),a
-       ld      a,b
-       out     (DATA_PORT),a
+        ld      a,ADJUST_REG        ;restore adjust value
+        out     (SELECT_PORT),a
+        ld      a,b
+        out     (DATA_PORT),a
 
-       ld      a,OPCODE_REG        ;stop all commands
-       out     (SELECT_PORT),a
-       ld      a,OPCODE_STOP
-       out     (DATA_PORT),a
+        ld      a,OPCODE_REG        ;stop all commands
+        out     (SELECT_PORT),a
+        ld      a,OPCODE_STOP
+        out     (DATA_PORT),a
 
-       ld      a,CONTROL_REG          ;Display screen, disable sprites
-       out     (SELECT_PORT),a
-       ld      a,0c2h
-       out     (DATA_PORT),a
+        ld      a,CONTROL_REG          ;Display screen, disable sprites
+        out     (SELECT_PORT),a
+        ld      a,0c2h
+        out     (DATA_PORT),a
 
-       ld      a,PALETTE_PTR_REG  ;Clean pallete
-       out     (SELECT_PORT),a
-       xor     a
-       out     (DATA_PORT),a
+        ld      a,PALETTE_PTR_REG  ;Clean pallete
+        out     (SELECT_PORT),a
+        xor     a
+        out     (DATA_PORT),a
 
-       ld      b,64
-       xor     a
+        ld      b,64
+        xor     a
 1:
-       out     (PALETTE_PORT),a
-       out     (PALETTE_PORT),a
-       out     (PALETTE_PORT),a
-       djnz    1b
+        out     (PALETTE_PORT),a
+        out     (PALETTE_PORT),a
+        out     (PALETTE_PORT),a
+        djnz    1b
 
-       out     (06fh),a
-       ret
+        out     (06fh),a
+        ret
 
 
 
@@ -282,7 +265,9 @@ reset:
 ;;; Setting B4 mode
 
         psect   text
-setmode:
+        global  _videomode
+        signat  _videomode,24
+_videomode:
         di
         ld      a,SCRMODE0_REG     ;DSPM = 2,  DCKM = 2, XIMM = 2, CLRM = 1
         out     (SELECT_PORT),a
@@ -294,7 +279,7 @@ setmode:
         xor     a
         out     (DATA_PORT),a
 
-        ld      a,01h              ;MCS = 1
+        ld      a,00h              ;MCS = 0
         out     (CONTROL_PORT),a
 
         ld      a,PALETTE_CTRL_REG ;PLT5-0 = PLTM = PLTAIH = YAE = PLTM = 0
@@ -461,6 +446,16 @@ _resetspd:
         ret
 
         psect   text
+        global  _waittr
+        signat  _waittr,24
+_waittr:
+        in       a,(STATUS_PORT)
+        rlca
+        ret      c
+        jr       _waittr
+
+
+        psect   text
         global  _waitce
         signat  _waitce,24
 _waitce:
@@ -518,11 +513,13 @@ cursor:
 
 
         psect   text
+        global  _fgetc
+        global  __iob
         global  _vdp_init
         signat  _vdp_init,24
 _vdp_init:
         call    reset           ;reset the chip
-        call    setmode
+        call    _videomode
 
         ld      de,pallete      ;set default pallete
         call    _setpal
