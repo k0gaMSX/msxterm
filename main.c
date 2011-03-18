@@ -8,11 +8,17 @@
 
 int main(int argc, char *argv[])
 {
-  unsigned short buff[] = {'h', 'o'};
+  short c;
+  const char *str="\033cHola \033[33;45mmundo\n";
 
   init_term();
   vdp_init();
-  term_write(buff, sizeof(buff));
+
+ while (c = *str++) {
+   term_write(&c, 1);
+   getchar();
+ }
+
 
   return 0;
 }
