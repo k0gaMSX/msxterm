@@ -602,7 +602,7 @@ static void ctrl_codes(register unsigned char c)
 
   case 0x0a:              /* LF */
     lf();
-    if (is_kbd(VC_CRLF))
+    if (is_kbd(KBD_CRLF))
       goto act_ptr;
 
   case 0x0b:              /* CR */

@@ -1,8 +1,8 @@
 *.o
 *.obj
 *.d
-msxterm
-msxterm.com
+*.com
+*.crf
 conchar.com
 TAGS
 
