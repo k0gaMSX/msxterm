@@ -76,6 +76,7 @@ void enable_cursor(void)
 
 void set_height_glyph(uint8_t height)
 {
+  assert(height >= 8 && height <= 16);
 
   vwrite_ad(HEIGHT_ADDRESS);
   outp(V9990_VRAM_PORT, height);
@@ -92,7 +93,7 @@ uint8_t get_height_glyph(void)
   ret = inp(V9990_VRAM_PORT);
   ei();
 
-  assert(ret >= 8 && ret <= 32);
+  assert(ret >= 8 && ret <= 16);
   return ret;
 }
 
@@ -108,7 +109,7 @@ int8_t read_glyphs(uint8_t *buf_font)
   uint8_t i, j, height = get_height_glyph();
 
   assert(buf_font);
-  assert(height >= 8 && height <= 32);
+  assert(height >= 8 && height <= 16);
   vread_ad(FONT_ADDRESS);
   do {
     for (j = height; j != 0; --j) {
@@ -139,7 +140,7 @@ void write_glyphs(uint8_t *buf_font, uint8_t height)
   uint8_t i, j;
 
   assert(buf_font);
-  assert(height >= 8 && height <= 32);
+  assert(height >= 8 && height <= 16);
   set_height_glyph(height);
   vwrite_ad(FONT_ADDRESS);
 

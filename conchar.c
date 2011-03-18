@@ -40,7 +40,7 @@ static const char more_help_string[] =
   "--help                Print this text\n"
   "-H, --char-height=N   Usually height font is calculated from file size\n"
   "                      but this option lets you indicate other value. N\n"
-  "                      should be a value between 8 and 32\n"
+  "                      should be a value between 8 and 16\n"
   "-f, --font=file       Name of the file from is read the fonts (Mandatory)\n"
   "-F, --old-font-raw=file   Name of the file where old font is saved\n";
 
@@ -48,7 +48,7 @@ static const char more_help_string[] =
 static const char *new_font;
 static const char *old_font;
 static uint8_t char_height;
-static uint8_t buf_font[32 * 256];
+static uint8_t buf_font[16 * 256];
 
 
 
@@ -160,8 +160,8 @@ static void parse_args(char *argv[])
 
   if (char_height_string) {
     char_height = atoi(char_height_string);
-    if (char_height < 8 && char_height > 32)
-      die("-H, --char-height needs a value between 8 and 32\n");
+    if (char_height != 8  && char_height != 16)
+      die("-H, --char-height needs a value between 8 and 16\n");
     }
 }
 
@@ -192,7 +192,9 @@ static int8_t get_height(const char * fname, FILE * fp)
     die("I can't get size of %s file: %s\n", new_font, strerror(errno));
 
   height = fsize/256;
-  assert(height >= 8 && height <= 32);
+  if (height < 8  || height > 16)
+       die("Incorrect font file size\n");
+
   return height;
 }
 
