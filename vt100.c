@@ -6,7 +6,7 @@
 #include "vt100.h"
 #include "bell.h"
 #include "vram.h"
-#include "kbd.h"
+#include "keyboard.h"
 
 static struct term xterm;
 

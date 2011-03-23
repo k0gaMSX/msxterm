@@ -1,9 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <intrpt.h>
 
-#include "kbd.h"
+#include "keyboard.h"
 #include "tty.h"
 #include "version.h"
 
@@ -97,19 +96,9 @@ void options(int argc, char * argv[])
 
 int main(int argc, char *argv[])
 {
-  kbd_reset();
   options(argc, argv);
 
   for (;;) {
-    di();
-    scan_matrix();
-
-    if (++count == delay) {
-      break;
-    }
-
-    ei();
-    halt();
   }
 
   return EXIT_SUCCESS;

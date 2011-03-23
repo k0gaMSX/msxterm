@@ -1,4 +1,4 @@
-MSXTERM_OBJS = 	bell.obj kbd.obj vt100.obj \
+MSXTERM_OBJS = 	bell.obj keyboard.obj kbd.obj vt100.obj \
 		vram.obj msxterm.obj bell.obj \
 		tty.obj v9990.obj hitech.obj
 
@@ -9,7 +9,7 @@ BIN = msxterm.com conchar.com showkey.com
 DEPS = $(MSXTERM_OBJS:.obj=.d)
 DEPS += $(CONSOLECHARS_OBJS:.obj=.d)
 
-SHOWKEY_SRC = kbd.c showkey.c
+SHOWKEY_SRC = keyboard.obj kbd.c showkey.c
 SHOWKEY_OBJ = $(SHOWKEY_SRC:.c=.obj)
 
 SRC = $(MSXTERM_SRC) $(SHOWKEY_SRC)
@@ -32,7 +32,7 @@ install: all
 	sb $(TARGETS)
 
 msxterm.com:  $(MSXTERM_OBJS)
-	$(CC)  $(LDFLAGS) $^ $(LIBS) -O$@
+	$(CC) $(CFLAGS) $^ $(LIBS) -O$@
 
 
 showkey.com:  $(SHOWKEY_OBJ)
@@ -49,6 +49,9 @@ showkey.com:  $(SHOWKEY_OBJ)
 
 %.d: %.c
 	$(DEP) -MM -MP $< -MF $@
+
+%.d: %.as
+	touch $@
 
 
 .PHONY:  clean distclean deps
