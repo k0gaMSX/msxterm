@@ -14,10 +14,10 @@
 
 
 
-static uint8_t lastscan_v;
-static uint8_t lastscan_t;
-static uint8_t mode;
-static uint8_t kbd_matrix[NUMBER_ROW];
+static unsigned char lastscan_v;
+static unsigned char lastscan_t;
+static unsigned char mode;
+static unsigned char kbd_matrix[NUMBER_ROW];
 
 
 
@@ -32,20 +32,20 @@ void kbd_reset(void)
 
 
 
-int8_t is_kbd(int8_t test)
+unsigned char is_kbd(unsigned char test)
 {
   return 1;
 }
 
 
-void kbd_rstmode(uint8_t mask)
+void kbd_rstmode(unsigned char mask)
 {
   mode &= ~mask;
 }
 
 
 
-void kbd_setmode(uint8_t mask)
+void kbd_setmode(unsigned char mask)
 {
   mode &= ~mask;
   mode |= mask;
@@ -53,7 +53,7 @@ void kbd_setmode(uint8_t mask)
 
 
 
-static void kb_ev(uint8_t keycode)
+static void kb_ev(unsigned char keycode)
 {
   lastscan_v = keycode;
   lastscan_t = 0;
@@ -67,13 +67,13 @@ static void kb_ev(uint8_t keycode)
 }
 
 
-static uint8_t keycode;
-static uint8_t * row_pointer;
+static unsigned char keycode;
+static unsigned char *row_pointer;
 
-static void scan_row(uint8_t row)
+
+static void scan_row(unsigned char row)
 {
-  register uint8_t xor = row ^ *row_pointer;
-  register uint8_t mask;
+  register unsigned char mask, xor = row ^ *row_pointer;
 
   *row_pointer++ = row;
   if (!xor) {
@@ -83,7 +83,7 @@ static void scan_row(uint8_t row)
 
   for (mask= 1; mask; mask <<= 1) {
     if (xor & mask)
-      kb_ev(keycode++ | ((row & mask) ? 0x80 : 0));
+      kb_ev(keycode | ((row & mask) ? 0x80 : 0));
 
     ++keycode;
   }
@@ -92,10 +92,11 @@ static void scan_row(uint8_t row)
 
 void scan_matrix(void)
 {
-  uint8_t i;
-  uint8_t row_sel = inp(0xaa) & 0xf0;
+  register unsigned char i;
+  static unsigned char row_sel;
 
   row_pointer = kbd_matrix;
+  row_sel = inp(0xaa) & 0xf0;
   keycode = 0;
   for (i = 0; i < NUMBER_ROW; ++i) {
     outp(0xaa, row_sel | i);

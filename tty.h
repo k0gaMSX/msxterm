@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-void put_queue(uint8_t scancode);
+void put_queue(unsigned char scancode);
 
 
 #endif /* _TTY_H_ */

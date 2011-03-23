@@ -7,8 +7,8 @@
 
 struct encoding {
   void (* reset)(void);
-  uint8_t (* decode)(uint8_t in, uint16_t * out);
-  uint8_t (* encode)(uint16_t in, uint8_t * out);
+  unsigned char (* decode)(unsigned char in, unsigned short * out);
+  unsigned char (* encode)(unsigned short in, unsigned char * out);
 };
 
 
@@ -23,7 +23,7 @@ struct unimap_t {
 extern struct encoding * encoding;
 extern struct unimap_t unimap[0x80];
 
-void utf8mode (uint8_t mode);
+void utf8mode (unsigned char mode);
 void init_encoding(void);
 
 

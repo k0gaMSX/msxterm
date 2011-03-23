@@ -57,26 +57,25 @@
 
 
 struct term {
-  uint8_t nrows;
-  uint8_t ncols;
-  uint8_t state;
-  uint8_t offset;
-  int8_t mode;
-  int8_t question;
+  unsigned char nrows, ncols;
+  unsigned char state;
+  unsigned char offset;
+  unsigned char mode;
+  unsigned char question;
 
-  uint8_t pars[NPARS];
-  uint8_t npars;
+  unsigned char pars[NPARS];
+  unsigned char npars;
 
-  uint8_t xpos, ypos, xpos_s, ypos_s;
+  unsigned char xpos, ypos, xpos_s, ypos_s;
   struct video_att video, video_s;
-  int8_t bg_color;
-  int8_t fg_color;
+  unsigned char bg_color;
+  unsigned char fg_color;
 
-  uint8_t top;
-  uint8_t botton;
+  unsigned char top;
+  unsigned char botton;
 
-  uint16_t * map_char[MAXSIZEY];
-  uint16_t map_char_buf[MAXSIZEY * MAXSIZEX];
+  unsigned short *map_char[MAXSIZEY];
+  unsigned short map_char_buf[MAXSIZEY * MAXSIZEX];
   struct video_att * map_video[MAXSIZEY];
   struct video_att map_video_buf[MAXSIZEY * MAXSIZEX];
 };
@@ -84,5 +83,5 @@ struct term {
 
 
 void init_term(void);
-void term_write (uint16_t * buf, uint8_t count);
+void term_write (const void *buf, unsigned char count);
 #endif /* _VT100_H_ */

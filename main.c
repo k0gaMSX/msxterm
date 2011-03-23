@@ -8,17 +8,12 @@
 
 int main(int argc, char *argv[])
 {
-  short c;
-  const char *str="\033cHola \033[33;45mmundo\n";
+  const char str[]="\033cHola \033[33;45mmundo\n";
 
   init_term();
   vdp_init();
 
- while (c = *str++) {
-   term_write(&c, 1);
-   getchar();
- }
-
+  term_write(str, sizeof(str));
 
   return 0;
 }

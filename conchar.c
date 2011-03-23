@@ -47,8 +47,8 @@ static const char more_help_string[] =
 
 static const char *new_font;
 static const char *old_font;
-static uint8_t char_height;
-static uint8_t buf_font[16 * 256];
+static unsigned char char_height;
+static unsigned char buf_font[16 * 256];
 
 
 
@@ -99,7 +99,7 @@ static void parse_args(char *argv[])
 
   assert(argv);
   while (option = *++argv) {
-    int8_t need_arg = 0, invalid_option = 1;
+    char need_arg = 0, invalid_option = 1;
     char *arg = NULL;
 
     if (*option++ == '-') {
@@ -169,10 +169,10 @@ static void parse_args(char *argv[])
  * calculate the height of the glyphs in base of the file
  **/
 
-static int8_t get_height(const char * fname, FILE * fp)
+static unsigned char get_height(const char * fname, FILE * fp)
 {
   size_t fsize = 0;
-  int8_t height;
+  unsigned char height;
 
 #ifdef HAVE_STAT
   struct stat buf;
@@ -203,7 +203,7 @@ static int8_t get_height(const char * fname, FILE * fp)
 static void save_fonts(const char * fname)
 {
   FILE *fp;
-  int8_t height;
+  unsigned char height;
 
   assert(fname);
   fp = fopen(fname, "w");
@@ -220,7 +220,7 @@ static void save_fonts(const char * fname)
 
 
 
-static void load_fonts(const char * fname, uint8_t height)
+static void load_fonts(const char * fname, unsigned char height)
 {
   FILE *fp;
 

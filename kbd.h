@@ -9,10 +9,10 @@
 #define KBD_RS232      0x10
 #define KBD_RAW        0x20
 
-int8_t is_kbd(int8_t test);
+unsigned char is_kbd(unsigned char test);
 void kbd_reset(void);
-void kbd_rstmode(uint8_t mask);
-void kbd_setmode(uint8_t mask);
+void kbd_rstmode(unsigned char mask);
+void kbd_setmode(unsigned char mask);
 void scan_matrix(void);
 
 #endif /* _KBD_H_ */

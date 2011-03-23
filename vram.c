@@ -11,7 +11,7 @@
 #define HEIGHT_ADDRESS       0x6ffff
 #define MAX_COLUMN           80
 
-static uint16_t vram_x, vram_y, vram_height;
+static unsigned short vram_x, vram_y, vram_height;
 
 
 void clean_vram(void)
@@ -61,7 +61,7 @@ void ptr_vram(uint8_t x, uint8_t y)
 
 
 
-void write_vram(uint16_t c, struct video_att att)
+void write_vram(unsigned char c, struct video_att att)
 {
   static struct CMMMpars CMMM = {
     0, 0,
@@ -75,8 +75,6 @@ void write_vram(uint16_t c, struct video_att att)
   };
 
   uint16_t offset = FONT_OFFSET + c * 32;
-
-  assert(c < 256);
 
   CMMM.sa_off1 = offset & 0xff;
   CMMM.sa_off2 = (offset >> 8) & 0xff;
@@ -148,7 +146,7 @@ uint8_t get_height_glyph(void)
  * of 8xheight size
  **/
 
-int8_t read_glyphs(uint8_t *buf_font)
+uint8_t read_glyphs(uint8_t *buf_font)
 {
   uint8_t i, j, height = get_height_glyph();
 

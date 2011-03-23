@@ -17,7 +17,7 @@ static int delay = TO_SEC(10);        /* Default timeout */
 
 
 
-void put_queue(uint8_t val)
+void put_queue(unsigned char val)
 {
   count = 0;
   if (command == KEYCODES)

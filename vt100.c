@@ -29,7 +29,7 @@ static void reset_terminal(void)
   xterm.video.bg = xterm.bg_color;
   xterm.video_s = xterm.video;
   ptr_vram(0, 0);
-  {uint16_t **bp;
+  {unsigned short **bp;
    for (bp  = xterm.map_char; bp < xterm.map_char + MAXSIZEY; ++bp)
      memset(*bp, MAXSIZEX * sizeof(*bp), ERASE_CHAR);
   }
@@ -45,7 +45,7 @@ static void reset_terminal(void)
 
 void init_term(void)
 {
-  int8_t i;
+  unsigned char i;
   register size_t  size;
 
   xterm.xpos = xterm.ypos = 0;
@@ -124,7 +124,7 @@ static void ri()
 
 
 
-static void write_char(uint16_t c)
+static void write_char(unsigned char c)
 {
   if (xterm.xpos < xterm.ncols) {
     write_vram(c, xterm.video);
@@ -234,7 +234,7 @@ static void doESC(unsigned char c)
 
 
 
-static int8_t do_square(register unsigned char c)
+static unsigned char do_square(register unsigned char c)
 {
   xterm.question = 0;
   xterm.state = ESgetpars;
@@ -261,7 +261,7 @@ static int8_t do_square(register unsigned char c)
 
 
 
-static int8_t do_getpars(register unsigned char c)
+static unsigned char do_getpars(register unsigned char c)
 {
   if (c == ';' && xterm.npars < NPARS) {
     xterm.npars++;
@@ -283,7 +283,7 @@ static int8_t do_getpars(register unsigned char c)
 
 
 
-static void goto_xy(register int8_t x, register int8_t y)
+static void goto_xy(register signed char x, register signed char y)
 {
   if (x < 0)  x = 0;
   else if (x >= xterm.nrows) x = xterm.ncols - 1;
@@ -299,9 +299,9 @@ static void goto_xy(register int8_t x, register int8_t y)
 
 static void do_SGR(void)
 {
-  uint8_t * ptr = xterm.pars;
+  unsigned char *ptr = xterm.pars;
   while (xterm.npars--) {
-    register uint8_t par = *ptr++;
+    register unsigned char par = *ptr++;
       switch (par) {
       case 0:                       /* reset/normal */
         CLEAR_VIDEO(xterm.video);
@@ -368,7 +368,7 @@ static void do_SGR(void)
 
 
 
-static void scroll_region(uint8_t par1, uint8_t par2)
+static void scroll_region(unsigned char par1, unsigned char par2)
 {
   if (!par1)  ++par1;
   if (!par2)  par2 = xterm.nrows;
@@ -383,10 +383,10 @@ static void scroll_region(uint8_t par1, uint8_t par2)
 
 
 
-static insert_char(int16_t val, uint8_t count)
+static insert_char(unsigned char val, unsigned char count)
 {
-  uint8_t offset = xterm.ncols - count, x = xterm.xpos + count;
-  uint16_t * src = xterm.map_char[xterm.ypos] + offset - 1;
+  unsigned char offset = xterm.ncols - count, x = xterm.xpos + count;
+  unsigned short *src = xterm.map_char[xterm.ypos] + offset - 1;
   struct video_att * video = xterm.map_video[xterm.ypos] + offset - 1;
 
 
@@ -402,15 +402,17 @@ static insert_char(int16_t val, uint8_t count)
   } while (--offset);
 
   ptr_vram(xterm.xpos, xterm.ypos);
-  do write_char(val); while (--count);
+  do
+    write_char(val);
+  while (--count);
 }
 
 
 
 
-static void erase_in_line(uint8_t par1)
+static void erase_in_line(unsigned char par1)
 {
-  uint16_t * start;
+  unsigned short *start;
   size_t  count;
 
   switch (par1){
@@ -436,10 +438,10 @@ static void erase_in_line(uint8_t par1)
 
 
 
-static void erase_in_display(uint8_t par1)
+static void erase_in_display(unsigned char par1)
 {
-  uint16_t * start;
-  uint16_t count;
+  unsigned short *start;
+  unsigned count;
 
 
   switch (par1){
@@ -453,7 +455,7 @@ static void erase_in_display(uint8_t par1)
     break;
   case 2:
     start = xterm.map_char_buf;
-    count = sizeof(xterm.map_char_buf) >> 1;
+    count = sizeof(xterm.map_char_buf) / sizeof(*xterm.map_char_buf);
   default:
     return;
   }
@@ -465,8 +467,8 @@ static void erase_in_display(uint8_t par1)
 
 static void do_gotpars(register unsigned char  c)
 {
-  uint8_t par1 = xterm.pars[0], par2 = xterm.pars[0];
-  register int8_t x = xterm.xpos, y = xterm.ypos;
+  unsigned char par1 = xterm.pars[0], par2 = xterm.pars[0];
+  register signed char x = xterm.xpos, y = xterm.ypos;
 
   xterm.state = ESnormal;
   if (!xterm.question) {
@@ -646,13 +648,14 @@ static void ctrl_codes(register unsigned char c)
 
 
 
-void term_write (register uint16_t * buf, register uint8_t count)
+void term_write (const void *buf, unsigned char count)
 {
+  const unsigned char *bp = (unsigned char *) buf;
   assert(count && buf);
   hide_cursor();
 
   do {
-    register int16_t c = *buf++;
+    unsigned char c = *bp++;
 
     if (xterm.state != ESnormal || c < 0x20 || c == 0x9b)
       ctrl_codes(c);
