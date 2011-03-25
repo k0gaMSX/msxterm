@@ -1,4 +1,4 @@
-OBJS = hitech.obj
+OBJS = printk.obj
 DEPS = $(OBJS:.obj=.d)
 
 
@@ -14,3 +14,4 @@ lib.lib:  $(OBJS)
 
 include Makefile.rules
 ### Dependencies:
+printk.o: printk.c
