@@ -1,0 +1,25 @@
+
+OBJS = bell.obj keyboard.obj tty.obj vram.obj vt100.obj kbd.obj v9990.obj
+DEPS = $(OBJS:.obj=.d)
+
+LIBS =
+DEP = gcc
+CC = zc
+AS = zas
+CPPFLAGS = -Iinclude
+CFLAGS = -CPM -Zg3 -W-3 -P8 $(CPPFLAGS)
+ASFLAGS =
+LDFLAGS = -CPM
+AR	= libr r
+
+
+all: char.lib
+
+
+char.lib:  $(OBJS)
+	for i in $? ; do \
+		$(AR) $@ $$i ;\
+	done
+
+include 'Makefile.rules'
+### Dependencies:

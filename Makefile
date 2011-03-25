@@ -1,73 +1,27 @@
-MSXTERM_OBJS = 	bell.obj keyboard.obj kbd.obj vt100.obj \
-		vram.obj msxterm.obj bell.obj \
-		tty.obj v9990.obj hitech.obj
 
-CONSOLECHARS_OBJS = conchar.obj vram.obj v9990.obj vram.obj hitech.obj
-
-BIN = msxterm.com conchar.com showkey.com
-
-DEPS = $(MSXTERM_OBJS:.obj=.d)
-DEPS += $(CONSOLECHARS_OBJS:.obj=.d)
-
-SHOWKEY_SRC = keyboard.obj kbd.c showkey.c
-SHOWKEY_OBJ = $(SHOWKEY_SRC:.c=.obj)
-
-SRC = $(MSXTERM_SRC) $(SHOWKEY_SRC)
-LIBS =
-DEP = gcc
-CC = zc
-AS = zas
-CFLAGS = -CPM -Zg3 -W-3 -P8
+DEP 	= gcc
+CC 	= zc
+AS 	= zas
+CPPFLAGS = -Iinclude
+CFLAGS 	= -CPM -Zg3 -W-3 -P8 $(CPPFLAGS)
 ASFLAGS =
-LDFLAGS = -CPM
+MAKEFLAGS = --include-dir=$(PWD)
+AR	= libr r
 
-all: $(BIN)
-
-conchar.com: $(CONSOLECHARS_OBJS)
-	$(CC)  $(LDFLAGS) $^ $(LIBS) -O$@
-
-all: $(TARGETS)
-
-install: all
-	sb $(TARGETS)
-
-msxterm.com:  $(MSXTERM_OBJS)
-	$(CC) $(CFLAGS) $^ $(LIBS) -O$@
+export CC LIBS DEP AS CFLAGS ASFLAGS LDFLAGS MAKEFLAGS AR CPPFLAGS
 
 
-showkey.com:  $(SHOWKEY_OBJ)
-	$(CC) $(CFLAGS) $^ $(LIBS) -O$@
+DIRS    = kernel drivers/char lib
+LIBS 	= kernel/kernel.lib drivers/char/char.lib lib/lib.lib
+LDFLAGS = -CPM $(LIBS)
 
 
-%.obj: %.as
-	$(AS) $(ASFLAGS) -C $<
+.PHONY: all clean dep distclean
 
+all clean dep distclean:
+	for i in $(DIRS) ; do \
+		make -C $$i $@ ;\
+	done
 
-%.obj: %.c
-	$(CC) $(CFLAGS) -C $<
-
-
-%.d: %.c
-	$(DEP) -MM -MP $< -MF $@
-
-%.d: %.as
-	touch $@
-
-
-.PHONY:  clean distclean deps
-
-deps:	$(DEPS)
-
-
-distclean: clean
-	rm -f *.d
-
-clean:
-	rm -f *.obj
-	rm -f TAGS
-	rm -f *.crf
-	rm -f $(BIN)
-
-
-
-include $(DEPS)
+image: all
+	$(CC) $(LDFLAGS)  -O$@

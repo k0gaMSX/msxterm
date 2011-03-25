@@ -1,0 +1,43 @@
+
+%.obj: %.as
+	$(AS) $(ASFLAGS) -C $<
+
+
+%.obj: %.c
+	$(CC) $(CFLAGS) -C $<
+
+
+
+%.d: %.c
+	$(DEP) $(CPPFLAGS) -MM -MP $< -MF $@
+
+
+.PHONY:  clean distclean deps
+
+
+distclean: clean
+	rm -f *.d
+	sed '/\#\#\# Dependencies/q' < Makefile > make_tmp
+	cp make_tmp Makefile
+	rm make_tmp
+
+clean:
+	rm -f *.obj
+	rm -f TAGS
+	rm -f *.crf
+	rm -f $(BIN)
+	for i in *.c; do \
+		rm -f `echo $$i | sed 's/\.c/\.as/'` ; \
+	done
+	rm -f *.lib
+	rm -f make_tmp
+
+%.d: %.as
+	touch $@
+
+
+dep:	$(DEPS)
+	sed '/\#\#\# Dependencies/q' < Makefile > make_tmp
+	cat $(DEPS) >> make_tmp
+	cp make_tmp Makefile
+	rm make_tmp
