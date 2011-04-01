@@ -513,8 +513,6 @@ cursor:
 
 
         psect   text
-        global  _fgetc
-        global  __iob
         global  _vdp_init
         signat  _vdp_init,24
 _vdp_init:
