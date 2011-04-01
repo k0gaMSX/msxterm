@@ -160,7 +160,7 @@ size_t vsprintk(char * buf, const char *fmt, va_list args)
 
 
 
-char buffer[1024];
+static char buffer[1024];
 
 size_t printk(char * bp, const char *fmt, ...)
 {
@@ -170,4 +170,6 @@ size_t printk(char * bp, const char *fmt, ...)
      cnt = vsprintk(buffer, fmt, args);
      term_write(buffer, cnt);
      va_end(args);
+
+     return cnt;
 }
