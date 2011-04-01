@@ -1,11 +1,9 @@
-
+# -*- mode: Makefile -*-
 %.obj: %.as
 	$(AS) $(ASFLAGS) -C $<
 
-
-%.obj: %.c
-	$(CC) $(CFLAGS) -C $<
-
+%.as: %.c
+	$(CC) $(CFLAGS) -S $<
 
 
 %.d: %.c
@@ -21,19 +19,12 @@ distclean: clean
 	cp make_tmp Makefile
 	rm make_tmp
 
-clean:
-	rm -f *.obj
-	rm -f TAGS
-	rm -f *.crf
-	rm -f $(BIN)
-	for i in *.c; do \
-		rm -f `echo $$i | sed 's/\.c/\.as/'` ; \
-	done
-	rm -f *.lib
-	rm -f make_tmp
 
 %.d: %.as
-	touch $@
+	printf "$<: " > $@
+	grep 'include' $< | awk '{print $$2}' | tr '\n' ' ' >> $@
+	printf "\n" >> $@
+
 
 
 dep:	$(DEPS)
