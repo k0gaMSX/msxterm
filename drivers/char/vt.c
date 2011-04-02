@@ -4,7 +4,7 @@
 
 #include "tnix/ctype.h"
 #include "tnix/assert.h"
-#include "tnix/vt100.h"
+#include "tnix/vt.h"
 #include "tnix/bell.h"
 #include "tnix/keyboard.h"
 
@@ -43,7 +43,7 @@ static void reset_terminal(void)
 }
 
 
-void init_term(void)
+void con_init(void)
 {
   unsigned char i;
   register size_t  size;
@@ -648,7 +648,7 @@ static void ctrl_codes(register unsigned char c)
 
 
 
-void term_write (const void *buf, unsigned char count)
+void con_write (const void *buf, unsigned count)
 {
   const unsigned char *bp = (unsigned char *) buf;
   assert(count && buf);

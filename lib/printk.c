@@ -11,7 +11,7 @@
 #include "arch/stddef.h"
 #include "arch/string.h"
 
-#include "tnix/vt100.h"
+#include "tnix/vt.h"
 
 #define isdigit(c) ((c) >= '0' &&  (c) <= '9')
 
@@ -169,7 +169,7 @@ size_t printk(char * bp, const char *fmt, ...)
      size_t cnt;
      va_start(args, fmt);
      cnt = vsprintk(buffer, fmt, args);
-     term_write(buffer, cnt);
+     con_write(buffer, cnt);
      va_end(args);
 
      return cnt;

@@ -81,7 +81,6 @@ struct term {
 };
 
 
-
-void init_term(void);
-void term_write (const void *buf, unsigned char count);
+extern void con_write (const void *buf, unsigned count);
+extern void con_init(void);
 #endif /* _VT100_H_ */
