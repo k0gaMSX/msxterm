@@ -3,7 +3,7 @@ DEP 	= gcc
 CC 	= zc
 AS 	= zas
 CPP     = cpp
-CPPFLAGS = -Iinclude
+CPPFLAGS = -Iinclude -Iinclude/arch
 CFLAGS 	= -Zg3 -W-2 -P8 -BS $(CPPFLAGS)
 ASFLAGS =
 MAKEFLAGS = --include-dir=$(PWD)
@@ -12,13 +12,14 @@ OBJ2HEX = objtohex
 LD	= hlink
 
 
-LIBS 	=  init/init.lib kernel/kernel.lib arch/arch.lib
+LIBS 	=  init/init.lib kernel/kernel.lib arch/arch.lib  \
+	   lib/lib.lib drivers/char/char.lib arch/asm.lib arch/crt0.lib lib/lib.lib
 
 LDFLAGS =  -z -L
 
 export CC LIBS DEP AS CFLAGS ASFLAGS LDFLAGS MAKEFLAGS AR CPPFLAGS CPP LD
 
-DIRS  = arch init kernel
+DIRS  = arch init kernel lib drivers/char
 
 
 .PHONY: all clean dep distclean
@@ -41,6 +42,7 @@ arch/head.obj:
 distclean: clean
 	find . -name "*.d" -exec rm \{\} \;
 	rm -f TAGS
+	@for i in $(DIRS) ; do make -C $$i $@; done
 
 
 clean:
@@ -51,7 +53,7 @@ clean:
 
 
 l.obj:  $(LIBS) arch/head.obj
-	$(LD) -z -Ptext=100h/0,data,bss -MSystem.map arch/head.obj  $(LIBS)
+	$(LD) -z -Ptext=100h/0,data,bss -MSystem.map arch/head.obj $(LIBS)
 
 
 image: l.obj

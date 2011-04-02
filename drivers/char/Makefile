@@ -1,14 +1,15 @@
 
-OBJS = bell.obj keyboard.obj tty.obj vram.obj vt100.obj kbd.obj v9990.obj
+OBJS = bell.obj keyboard.obj tty.obj vt100.obj kbd.obj
 DEPS = $(OBJS:.obj=.d)
 
 all: char.lib
 
+clean:
+	rm -f *.obj *.lib
 
 char.lib:  $(OBJS)
-	for i in $? ; do \
-		$(AR) $@ $$i ;\
-	done
+	$(AR) r $@ $?
+
 
 include Makefile.rules
 ### Dependencies:

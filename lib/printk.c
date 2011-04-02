@@ -7,10 +7,11 @@
  * very small and fast.
  */
 
-#include <stdarg.h>
-#include <stddef.h>
-#include <string.h>
+#include "arch/stdarg.h"
+#include "arch/stddef.h"
+#include "arch/string.h"
 
+#include "tnix/vt100.h"
 
 #define isdigit(c) ((c) >= '0' &&  (c) <= '9')
 

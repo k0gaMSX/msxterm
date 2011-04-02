@@ -25,7 +25,8 @@ distclean: clean
 	grep 'include' $< | awk '{print $$2}' | tr '\n' ' ' >> $@
 	printf "\n" >> $@
 
-
+%.lib:
+	for i in $? ; do $(AR) r $@ $$i; done
 
 dep:	$(DEPS)
 	sed '/\#\#\# Dependencies/q' < Makefile > make_tmp

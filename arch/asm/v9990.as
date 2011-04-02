@@ -531,5 +531,4 @@ _vdp_init:
         ld      de,0            ;set the cursor in initial position
         ld      bc,0
         call    _set_cursor_pos
-        ei
         ret

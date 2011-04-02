@@ -1,11 +1,11 @@
-#include <string.h>
-#include <sys.h>
-#include <assert.h>
 
-#include "keyboard.h"
-#include "bell.h"
-#include "tty.h"
-#include "keymaps.h"
+#include "arch/string.h"
+
+#include "tnix/assert.h"
+#include "tnix/keyboard.h"
+#include "tnix/bell.h"
+#include "tnix/tty.h"
+#include "tnix/keymaps.h"
 
 
 
@@ -88,12 +88,6 @@ static void kbd_keycode(unsigned char keycode)
     }
   }
 
- printf("shift = %02x lock = %02x shift_final = %02x\n"
-        "keycode = %d keysym = %04x [%d '%c'] "
-        "type = %d up = %d\n",
-        shift_state, lock_state, shift_final,
-        keycode & 0x7f, keysym, KVAL(keysym), KVAL(keysym),
-        type, keycode & 0x80);
 
   assert(k_handlers[type]);
   k_handlers[type](KVAL(keysym), keycode & 0x80);

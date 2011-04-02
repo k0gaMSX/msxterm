@@ -1,17 +1,15 @@
-OBJS = printk.obj
+OBJS = ctype.obj printk.obj assert.obj
 DEPS = $(OBJS:.obj=.d)
 
 
 all: lib.lib
 
+clean:
+	rm -f *.obj *.lib
+
 
 lib.lib:  $(OBJS)
-	for i in $? ; do \
-		$(AR) $@ $$i ;\
-	done
-
 
 
 include Makefile.rules
 ### Dependencies:
-printk.o: printk.c

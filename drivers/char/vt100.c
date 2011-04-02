@@ -1,12 +1,12 @@
 
-#include <string.h>
-#include <ctype.h>
-#include <assert.h>
+#include "arch/string.h"
+#include "arch/vram.h"
 
-#include "vt100.h"
-#include "bell.h"
-#include "vram.h"
-#include "keyboard.h"
+#include "tnix/ctype.h"
+#include "tnix/assert.h"
+#include "tnix/vt100.h"
+#include "tnix/bell.h"
+#include "tnix/keyboard.h"
 
 static struct term xterm;
 

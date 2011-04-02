@@ -1,6 +1,6 @@
 
-#include "arch.h"
-#include "sys.h"
+#include "arch/arch.h"
+#include "tnix/sys.h"
 
 
 void main(void)                 /* This is not an error */

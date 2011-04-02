@@ -1,5 +1,5 @@
-#include <string.h>
-#include "encoding.h"
+#include "string.h"
+#include "tnix/encoding.h"
 
 struct encoding * encoding;      /* struct with pointer to code/decode
                                   methods in actual encoding */

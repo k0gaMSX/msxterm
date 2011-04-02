@@ -1,7 +1,7 @@
 #ifndef _KBD_H_
 #define _KBD_H_
 
-#include "types.h"
+#include "arch/types.h"
 #define KBD_REPEAT     0x01
 #define KBD_CKMODE     0x02
 #define KBD_APPLIC     0x04

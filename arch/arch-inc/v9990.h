@@ -1,7 +1,7 @@
 
 #ifndef V9990_H_
 #define V9990_H_
-#include "types.h"
+#include "arch/types.h"
 
 
 #define V9990_VRAM_PORT             0x60

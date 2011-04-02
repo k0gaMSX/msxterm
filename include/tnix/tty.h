@@ -1,7 +1,7 @@
 #ifndef _TTY_H_
 #define _TTY_H_
 
-#include "types.h"
+#include "arch/types.h"
 
 #define RS232_TTY         0
 #define MSX_TTY           1

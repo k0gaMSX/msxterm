@@ -1,6 +1,6 @@
 #ifndef _ENCODING_H_
 #define _ENCODING_H_
-#include "types.h"
+#include "tnix/types.h"
 
 #define UCS_INVALID 0xfffd
 #define ASCII_INVALID 0x1a

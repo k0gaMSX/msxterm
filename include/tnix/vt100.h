@@ -4,8 +4,8 @@
 
 
 
-#include "types.h"
-#include "vram.h"
+#include "arch/types.h"
+#include "arch/vram.h"
 
 #if 0
   unsigned vc_charset        : 1;  /* Character set G0 / G1 */

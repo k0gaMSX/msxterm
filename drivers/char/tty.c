@@ -1,20 +1,9 @@
 
-#include "tty.h"
-#include "vt100.h"
-#include "keyboard.h"
+#include "tnix/tty.h"
+#include "tnix/vt100.h"
+#include "tnix/keyboard.h"
 
-static unsigned char ttymode;
-
-
-
-void tty(void)
-{
-  extern void init_term(void), vdp_init(void);
-
-  ttymode = MSX_TTY;
-  init_term();
-  vdp_init();
-}
+static unsigned char ttymode = MSX_TTY;
 
 
 
