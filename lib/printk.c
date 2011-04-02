@@ -163,7 +163,7 @@ size_t vsprintk(char * buf, const char *fmt, va_list args)
 
 static char buffer[1024];
 
-size_t printk(char * bp, const char *fmt, ...)
+size_t printk(const char *fmt, ...)
 {
      va_list args;
      size_t cnt;
