@@ -30,6 +30,6 @@ distclean: clean
 
 dep:	$(DEPS)
 	sed '/\#\#\# Dependencies/q' < Makefile > make_tmp
-	cat $(DEPS) >> make_tmp
+	cat $(DEPS) | sed 's/\.o:/\.obj:/' >> make_tmp
 	cp make_tmp Makefile
 	rm make_tmp
