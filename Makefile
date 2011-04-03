@@ -12,8 +12,8 @@ OBJ2HEX = objtohex
 LD	= hlink
 
 
-LIBS 	=  init/init.lib kernel/kernel.lib arch/arch.lib  \
-	   lib/lib.lib drivers/char/char.lib arch/asm.lib arch/crt0.lib lib/lib.lib
+LIBS 	=  init/init.lib kernel/kernel.lib drivers/char/char.lib arch/arch.lib  \
+	   lib/lib.lib arch/asm.lib arch/crt0.lib lib/lib.lib
 
 LDFLAGS =  -z -L
 
