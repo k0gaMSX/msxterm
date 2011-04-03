@@ -7,3 +7,8 @@ conchar.com
 TAGS
 *.lib
 system.map
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+image
