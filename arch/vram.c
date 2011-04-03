@@ -24,10 +24,8 @@ void clean_vram(void)
     V9990_OP_LMMV
   };
 
-  di();
   waitce();
   v9990cmd(&LMMV);
-  ei();
 }
 
 
@@ -50,10 +48,8 @@ void next_vram(void)
 void ptr_vram(uint8_t x, uint8_t y)
 {
   assert(x < 1024/8 &&  y < 256/8);
-  di();
   vram_x = x * 8;
   vram_y = y * vram_height;
-  ei();
 }
 
 
@@ -87,28 +83,22 @@ void write_vram(unsigned char c, struct video_att att)
   CMMM.fg |= CMMM.fg << 4;
   CMMM.fg |= CMMM.fg << 8;
 
-  di();
   waitce();
   v9990cmd(&CMMM);
-  ei();
 }
 
 
 
 void hide_cursor(void)
 {
-  di();
   resetspd();
-  ei();
 }
 
 
 void enable_cursor(void)
 {
-  di();
   setspd();
   set_cursor_pos(vram_x, vram_y);
-  ei();
 }
 
 
@@ -149,8 +139,6 @@ void write_glyphs(uint8_t *buf_font, uint8_t height)
     ldirvm(zero, 16);
     buf_font += 16;
   } while (--i);                /* 256 times using only a byte */
-
-  ei();
 }
 
 

@@ -37,6 +37,21 @@ start:
 1:      im      0                 ;set im 0
         ld      sp,(_stack_init)  ;set initial stack
 
+        ld      hl,038h
+        ld      de,isr
+        ld      (hl),0c3h
+        inc     hl
+        ld      (hl),e
+        inc     hl
+        ld      (hl),d            ;set interrupt service routine
+        ei
         jp      _main             ;never return
-        psect   text
+
+
+isr:
+        push    af
+        in      a,(99h)
+        pop     af
+        ei
+        ret
         end     start
