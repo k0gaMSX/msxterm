@@ -24,6 +24,7 @@ static void reset_terminal(void)
 {
   clean_vram();
   xterm.xpos = xterm.ypos = 0;
+
   CLEAR_VIDEO(xterm.video);
   xterm.video.fg = xterm.fg_color;
   xterm.video.bg = xterm.bg_color;
@@ -38,6 +39,7 @@ static void reset_terminal(void)
      memset(*bp, MAXSIZEX * sizeof(*bp), 0);
   }
 
+  xterm.mode = VT100_MODE;
   xterm.state = ESnormal;
   enable_cursor();
 }
@@ -48,11 +50,8 @@ void con_init(void)
   unsigned char i;
   register size_t  size;
 
-  xterm.xpos = xterm.ypos = 0;
   xterm.nrows = 24;
   xterm.ncols = 80;
-  xterm.mode = VT100_MODE;
-  xterm.state = ESnormal;
   xterm.bg_color = DEFAULT_BG_COLOR;
   xterm.fg_color = DEFAULT_FG_COLOR;
 
@@ -61,7 +60,7 @@ void con_init(void)
     xterm.map_video[i] = xterm.map_video_buf + size;
   }
 
-  ptr_vram(0, 0);
+  reset_terminal();
 }
 
 
