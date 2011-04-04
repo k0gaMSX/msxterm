@@ -1,6 +1,4 @@
 ;;; -*- mode: asm ; coding: iso-8859-1 -*-
-stack_start     equ     08000h
-
 
         psect   text,global,pure,class=CODE
         psect   strings,global,pure,class=CODE
