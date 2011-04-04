@@ -1,7 +1,7 @@
 
 
 
-OBJS = sys.obj
+OBJS = sys.obj panic.obj
 DEPS = $(OBJS:.obj=.d)
 
 

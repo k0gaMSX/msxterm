@@ -13,7 +13,7 @@ LD	= hlink
 
 
 LIBS 	=  init/init.lib kernel/kernel.lib drivers/char/char.lib arch/arch.lib  \
-	   lib/lib.lib arch/asm.lib arch/crt0.lib lib/lib.lib
+	   lib/lib.lib arch/asm.lib arch/crt0.lib lib/lib.lib kernel/kernel.lib
 
 LDFLAGS =  -z -L
 
