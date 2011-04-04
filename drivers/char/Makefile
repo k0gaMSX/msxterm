@@ -1,5 +1,5 @@
 
-OBJS = bell.obj keyboard.obj tty.obj vt.obj kbd.obj
+OBJS = bell.obj keyboard.obj tty.obj vt.obj
 DEPS = $(OBJS:.obj=.d)
 
 all: char.lib
