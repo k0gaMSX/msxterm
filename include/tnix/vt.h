@@ -73,11 +73,6 @@ struct term {
 
   unsigned char top;
   unsigned char botton;
-
-  unsigned short *map_char[MAXSIZEY];
-  unsigned short map_char_buf[MAXSIZEY * MAXSIZEX];
-  struct video_att * map_video[MAXSIZEY];
-  struct video_att map_video_buf[MAXSIZEY * MAXSIZEX];
 };
 
 

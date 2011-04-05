@@ -30,14 +30,6 @@ static void reset_terminal(void)
   xterm.video.bg = xterm.bg_color;
   xterm.video_s = xterm.video;
   ptr_vram(0, 0);
-  {unsigned short **bp;
-   for (bp  = xterm.map_char; bp < xterm.map_char + MAXSIZEY; ++bp)
-     memset(*bp, MAXSIZEX * sizeof(*bp), ERASE_CHAR);
-  }
-  {struct video_att **bp;
-   for (bp = xterm.map_video; bp < xterm.map_video + MAXSIZEY; ++bp)
-     memset(*bp, MAXSIZEX * sizeof(*bp), 0);
-  }
 
   xterm.mode = VT100_MODE;
   xterm.state = ESnormal;
@@ -47,18 +39,10 @@ static void reset_terminal(void)
 
 void con_init(void)
 {
-  unsigned char i;
-  register size_t  size;
-
   xterm.nrows = 24;
   xterm.ncols = 80;
   xterm.bg_color = DEFAULT_BG_COLOR;
   xterm.fg_color = DEFAULT_FG_COLOR;
-
-  for (i = size = 0; i < MAXSIZEY; ++i, size += MAXSIZEX) {
-    xterm.map_char[i] = xterm.map_char_buf + size;
-    xterm.map_video[i] = xterm.map_video_buf + size;
-  }
 
   reset_terminal();
 }
@@ -129,8 +113,6 @@ static void write_char(unsigned char c)
     write_vram(c, xterm.video);
     next_vram();
 
-    xterm.map_char[xterm.xpos][xterm.xpos] = c;
-    xterm.map_video[xterm.ypos][xterm.xpos] = xterm.video;
     ++xterm.xpos;
   }
 }
@@ -382,55 +364,11 @@ static void scroll_region(unsigned char par1, unsigned char par2)
 
 
 
-static insert_char(unsigned char val, unsigned char count)
-{
-  unsigned char offset = xterm.ncols - count, x = xterm.xpos + count;
-  unsigned short *src = xterm.map_char[xterm.ypos] + offset - 1;
-  struct video_att * video = xterm.map_video[xterm.ypos] + offset - 1;
-
-
-  assert(count > 0 && offset > 0);
-  ptr_vram(xterm.ncols - 1, xterm.ypos);
-
-  do {
-    write_vram(*src, *video);
-    prev_vram();
-
-    xterm.map_char[xterm.xpos][x] = *src--;
-    xterm.map_video[xterm.ypos][x--] = *video--;
-  } while (--offset);
-
-  ptr_vram(xterm.xpos, xterm.ypos);
-  do
-    write_char(val);
-  while (--count);
-}
-
-
 
 
 static void erase_in_line(unsigned char par1)
 {
-  unsigned short *start;
-  size_t  count;
-
-  switch (par1){
-  case 0:
-    start = &xterm.map_char[xterm.ypos][xterm.xpos];
-    count = MAXSIZEX - xterm.ypos;
-    break;
-  case 1:
-    start = &xterm.map_char[xterm.ypos][0];
-    count = xterm.xpos;
-    break;
-  case 2:
-    start = &xterm.map_char[xterm.ypos][0];
-    count = MAXSIZEX;
-  default:
-    return;
-  }
-
-  memset(start, ERASE_CHAR, count * sizeof(*start));
+     /* TODO: implement this function */
 }
 
 
@@ -439,27 +377,7 @@ static void erase_in_line(unsigned char par1)
 
 static void erase_in_display(unsigned char par1)
 {
-  unsigned short *start;
-  unsigned count;
-
-
-  switch (par1){
-  case 0:
-    start = &xterm.map_char[xterm.ypos][xterm.xpos];
-    count = xterm.map_char_buf - start - 1;
-    break;
-  case 1:
-    start = xterm.map_char_buf;
-    count = &xterm.map_char[xterm.ypos][xterm.xpos] - start;
-    break;
-  case 2:
-    start = xterm.map_char_buf;
-    count = sizeof(xterm.map_char_buf) / sizeof(*xterm.map_char_buf);
-  default:
-    return;
-  }
-
-  memset(start, ERASE_CHAR, count * sizeof(*start));
+     /* Implement this function */
 }
 
 
