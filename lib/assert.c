@@ -5,7 +5,7 @@
 
 int __fail_assert(char * exp, char * file, int line)
 {
-     printk("%s: %s: %s\n", exp, file, line);
+     printk("Assertion %s:%d: %s\n", file, line, exp);
      panic("Assertion failure");
 }
 
