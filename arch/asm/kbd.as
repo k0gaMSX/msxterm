@@ -2,13 +2,16 @@
 
 
 
-KBD_NUMBER_ROW          equ     11
-KBD_REPEAT_TIME         equ     10
+KBD_NUMBER_ROW          equ     11 ;Number of row of the keyboard matrix
+KBD_REPEAT_TIME         equ     50 ;time before we began to repeat a key
+KBD_REPEAT_RATE         equ      5 ;time between each repeat after the initial time
+
+        psect   data,class=DATA
+lastkeycode:    db      080h    ;it is necessary to avoid repeat in the beginning
 
 
         psect   bss,class=DATA
         psect   bss
-lastkeycode:    ds      1
 lasttime:       ds      1
 kbd_matrix:     ds      KBD_NUMBER_ROW
 
@@ -35,23 +38,30 @@ _kbd_hook:
         or      b
         out     (0aah),a
         in      a,(0a9h)         ;read the row
+        cpl
         call    scan_row        ;scan it!
         inc     b
         ld      a,KBD_NUMBER_ROW
         cp      b
         jp      nz,1b
 
+        ld      a,(lastkeycode)
+        and     80h
+        ret     nz              ;it was a release, so there isn't repeat
+
         ld      hl,lasttime     ;test repeat time
-        ld      a,KBD_REPEAT_TIME
-        cp      (hl)
+        or      (hl)
         jp      nz,no_repeat
 
         ld      a,(lastkeycode)
+        ld      e,a
         call    new_key
+        ld      a,KBD_REPEAT_RATE
+        ld      (lasttime),a
         ret
 
 no_repeat:
-        inc    (hl)
+        dec    (hl)
         ret
 
 
@@ -81,28 +91,48 @@ scan_row:
 
 scanbits:
         push    bc              ;save caller register
-        ld      d,1             ;initial mask
+;;; d <- scan row
+;;; e <- keycode
+;;; a <- xor
+
+        ld      c,1             ;initial mask
         ld      b,a             ;store the xor in b
 
 scanbit:
+        rrc     d               ;load the row bit in b7 of d
         ld      a,b
-        and     d               ;test a bit
-        call    nz,new_key      ;raise the event
-        inc     e               ;next opcode
-        sla     d
-        jp      nc,scanbit
+        and     c               ;test a bit
+        jp      z,1f
+
+        ld      a,d
+        cpl
+        and     80h
+        or      e               ;set b7 of e = 1 if key release
+
+        call    new_key       ;raise the event
+1:      inc     e             ;next keycode
+        sla     c
+        ld      a,c           ; c = 0 means we had tested all bits
+        or      a
+        jp      nz,scanbit
 
         pop     bc
         ret
 
 
-;;; a <- keycode
+;;; a <- keycode + push
 
 new_key:
+        push    hl
+        push    de
+        push    bc
+        ld      e,a
         ld      (lastkeycode),a
-        xor     a
+        ld      a,KBD_REPEAT_TIME
         ld      (lasttime),a
-        jp      _kbd_event
-
-
+        call      _kbd_event
+        pop     bc
+        pop     de
+        pop     hl
+        ret
 
