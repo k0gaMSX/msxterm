@@ -3,4 +3,8 @@
 
 extern void sys_init(void);
 
+typedef unsigned char (*int_handler)(void *data);
+
+void request_irq(int_handler handler, void *data);
+
 #endif /* _SYS_H_ */

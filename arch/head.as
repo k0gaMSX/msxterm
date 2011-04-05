@@ -42,14 +42,41 @@ start:
         ld      (hl),e
         inc     hl
         ld      (hl),d            ;set interrupt service routine
-        ei
         jp      _main             ;never return
 
 
+        global  _int_dispatch
+        signat  _int_dispatch,24
 isr:
+        di
+        push    hl
+        push    de
+        push    bc
         push    af
-        in      a,(99h)
+        exx
+        ex      af,af'
+        push    hl
+        push    de
+        push    bc
+        push    af
+        push    iy
+        push    ix
+
+        call    _int_dispatch
+
+        pop     ix
+        pop     iy
         pop     af
+        pop     bc
+        pop     de
+        pop     hl
+        ex      af,af'
+        exx
+        pop     af
+        pop     bc
+        pop     de
+        pop     hl
         ei
         ret
+
         end     start

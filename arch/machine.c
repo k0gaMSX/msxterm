@@ -4,6 +4,9 @@
 #include "arch/v9990.h"
 #include "arch/vram.h"
 #include "arch/types.h"
+#include "arch/stddef.h"
+#include "tnix/sys.h"
+#include "tnix/assert.h"
 
 #define STACK_ITEMS 300
 #define GLYPH_SIZE  16
