@@ -22,29 +22,29 @@ enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESinpars,
 
 static void reset_terminal(void)
 {
-  clean_vram();
-  xterm.xpos = xterm.ypos = 0;
+     clean_vram();
+     xterm.xpos = xterm.ypos = 0;
 
-  CLEAR_VIDEO(xterm.video);
-  xterm.video.fg = xterm.fg_color;
-  xterm.video.bg = xterm.bg_color;
-  xterm.video_s = xterm.video;
-  ptr_vram(0, 0);
+     CLEAR_VIDEO(xterm.video);
+     xterm.video.fg = xterm.fg_color;
+     xterm.video.bg = xterm.bg_color;
+     xterm.video_s = xterm.video;
+     ptr_vram(0, 0);
 
-  xterm.mode = VT100_MODE;
-  xterm.state = ESnormal;
-  enable_cursor();
+     xterm.mode = VT100_MODE;
+     xterm.state = ESnormal;
+     enable_cursor();
 }
 
 
 void con_init(void)
 {
-  xterm.nrows = 24;
-  xterm.ncols = 80;
-  xterm.bg_color = DEFAULT_BG_COLOR;
-  xterm.fg_color = DEFAULT_FG_COLOR;
+     xterm.nrows = 24;
+     xterm.ncols = 80;
+     xterm.bg_color = DEFAULT_BG_COLOR;
+     xterm.fg_color = DEFAULT_FG_COLOR;
 
-  reset_terminal();
+     reset_terminal();
 }
 
 
@@ -54,17 +54,17 @@ void con_init(void)
 
 static void bs(void)
 {
-  if (xterm.xpos) {
-    --xterm.xpos;
+     if (xterm.xpos) {
+          --xterm.xpos;
 /*    xterm.att.vc_need_wrap = 0;                                         */
-  }
+     }
 }
 
 
 
 static void tab(void)
 {
-  /* TODO: Implement TABs */
+     /* TODO: Implement TABs */
 /*    xterm.att.vc_need_wrap = 0;                                         */
 
 }
@@ -74,11 +74,11 @@ static void tab(void)
 
 static void lf(void)
 {
-  if (xterm.ypos == xterm.nrows) {
-    ;/* do scrolling ... */
-  } else {
-    ++xterm.ypos;
-  }
+     if (xterm.ypos == xterm.nrows) {
+          ;/* do scrolling ... */
+     } else {
+          ++xterm.ypos;
+     }
 
 /*  xterm.att.vc_need_wrap = 0;                                           */
 }
@@ -87,21 +87,21 @@ static void lf(void)
 
 static void cr(void)
 {
-  xterm.xpos = 0;
+     xterm.xpos = 0;
 /*  xterm.att.vc_need_wrap = 0;                                           */
 }
 
 
 static void del(void)
 {
-  /* Ignored */
+     /* Ignored */
 }
 
 
 
 static void ri()
 {
-  /* TODO: implement RI (reverse index) */
+     /* TODO: implement RI (reverse index) */
 }
 
 
@@ -109,36 +109,36 @@ static void ri()
 
 static void write_char(unsigned char c)
 {
-  if (xterm.xpos < xterm.ncols) {
-    write_vram(c, xterm.video);
-    next_vram();
+     if (xterm.xpos < xterm.ncols) {
+          write_vram(c, xterm.video);
+          next_vram();
 
-    ++xterm.xpos;
-  }
+          ++xterm.xpos;
+     }
 }
 
 
 
 static void put_ID(void)
 {
-  /* TODO: Implement DECID*/
+     /* TODO: Implement DECID*/
 }
 
 
 static void save_cur(void)
 {
-  xterm.xpos_s = xterm.xpos;
-  xterm.ypos_s = xterm.ypos;
-  xterm.video_s = xterm.video;
+     xterm.xpos_s = xterm.xpos;
+     xterm.ypos_s = xterm.ypos;
+     xterm.video_s = xterm.video;
 }
 
 
 
 static void restore_cur(void)
 {
-  xterm.xpos = xterm.xpos_s;
-  xterm.ypos = xterm.ypos_s;
-  xterm.video = xterm.video_s;
+     xterm.xpos = xterm.xpos_s;
+     xterm.ypos = xterm.ypos_s;
+     xterm.video = xterm.video_s;
 }
 
 
@@ -146,70 +146,70 @@ static void restore_cur(void)
 
 static void doESC(unsigned char c)
 {
-  xterm.state = ESnormal;
-  switch(c) {
-  case '[':
-    xterm.state = ESsquare;
-    return;
+     xterm.state = ESnormal;
+     switch(c) {
+     case '[':
+          xterm.state = ESsquare;
+          return;
 
-  case ']':
-    xterm.state = ESnonstd;
-    return;
+     case ']':
+          xterm.state = ESnonstd;
+          return;
 
-  case '%':
-    xterm.state = ESpercent;
-    return;
+     case '%':
+          xterm.state = ESpercent;
+          return;
 
-  case 'E':                     /* Next line (NEL) */
-    cr();
-    lf();
-    return;
+     case 'E':                     /* Next line (NEL) */
+          cr();
+          lf();
+          return;
 
-  case 'M':                     /* Reverse Index (RI) */
-    ri();
-    return;
+     case 'M':                     /* Reverse Index (RI) */
+          ri();
+          return;
 
-  case 'D':                     /* Index (IND) */
-    lf();
-    return;
+     case 'D':                     /* Index (IND) */
+          lf();
+          return;
 
-  case 'H':                     /* Tab set (HTS) */
-    return;                     /* TODO: implement TABS */
+     case 'H':                     /* Tab set (HTS) */
+          return;                     /* TODO: implement TABS */
 
-  case 'Z':                     /* Return terminal ID (DECID) */
-    put_ID();
-    return;
+     case 'Z':                     /* Return terminal ID (DECID) */
+          put_ID();
+          return;
 
-  case '7':                     /* Save cursor (DECSC) */
-    save_cur();
-    return;
+     case '7':                     /* Save cursor (DECSC) */
+          save_cur();
+          return;
 
-  case '8':                     /* Restore cursor (DECRC) */
-    restore_cur();
-    return;
+     case '8':                     /* Restore cursor (DECRC) */
+          restore_cur();
+          return;
 
-  case 'c':                     /* Full reset (RIS) */
-    reset_terminal();
-    return;
+     case 'c':                     /* Full reset (RIS) */
+          reset_terminal();
+          return;
 
-  case '(':                     /* Designate G0 character set (ISO 2022) */
-    /* TODO: G0 */
-  case ')':                     /* Designate G1 character set (ISO 2022) */
-    /* TODO: G1 */
-  case '*':                     /* Designate G2 character set (ISO 2022) */
-    /* TODO: G2 */
-  case '+':                     /* Designate G3 character set (ISO 2022) */
-    /* TODO: G3 */
+     case '(':                     /* Designate G0 character set (ISO 2022) */
+          /* TODO: G0 */
+     case ')':                     /* Designate G1 character set (ISO 2022) */
+          /* TODO: G1 */
+     case '*':                     /* Designate G2 character set (ISO 2022) */
+          /* TODO: G2 */
+     case '+':                     /* Designate G3 character set (ISO 2022) */
+          /* TODO: G3 */
 
 
-  case '#':                     /* DEC screen alignement test (DECALN) */
-    /* TODO: DEC test */
-  case '>':                     /* Normal keypad (DECPNM) */
-    /* TODO: Normal Keypad */
-  case '=':                     /* Application keypad (DECPAM) */
-    /* TODO: Application keypad */
-    return;
-  }
+     case '#':                     /* DEC screen alignement test (DECALN) */
+          /* TODO: DEC test */
+     case '>':                     /* Normal keypad (DECPNM) */
+          /* TODO: Normal Keypad */
+     case '=':                     /* Application keypad (DECPAM) */
+          /* TODO: Application keypad */
+          return;
+     }
 }
 
 
@@ -217,24 +217,24 @@ static void doESC(unsigned char c)
 
 static unsigned char do_square(register unsigned char c)
 {
-  xterm.question = 0;
-  xterm.state = ESgetpars;
-  memset(xterm.pars, 0, sizeof(xterm.pars));
-  xterm.npars = 0;
+     xterm.question = 0;
+     xterm.state = ESgetpars;
+     memset(xterm.pars, 0, sizeof(xterm.pars));
+     xterm.npars = 0;
 
-  if (c == '[') {
-    xterm.state = ESfunckey;
-    return 1;
-  } else if (c == 'N') {
-    return 1;                   /* TODO: SS2 */
-  } else if (c == 'O') {
-    return 1;                   /* TODO: SS3 */
-  } else if (c == '?') {
-    xterm.question = 1;
-    return 1;
-  }
+     if (c == '[') {
+          xterm.state = ESfunckey;
+          return 1;
+     } else if (c == 'N') {
+          return 1;                   /* TODO: SS2 */
+     } else if (c == 'O') {
+          return 1;                   /* TODO: SS3 */
+     } else if (c == '?') {
+          xterm.question = 1;
+          return 1;
+     }
 
-  return 0;                       /* return 0 if code wasn't consumed */
+     return 0;                       /* return 0 if code wasn't consumed */
 }
 
 
@@ -244,106 +244,106 @@ static unsigned char do_square(register unsigned char c)
 
 static unsigned char do_getpars(register unsigned char c)
 {
-  if (c == ';' && xterm.npars < NPARS) {
-    xterm.npars++;
-    xterm.state = ESgetpars;
-    return 1;
-  } else if (isdigit(c)) {
-    xterm.pars[xterm.npars] *= 10;
-    xterm.pars[xterm.npars] += c - '0';
-    xterm.state = ESinpars;
-    return 1;
-  } else {
-    if (xterm.state == ESinpars)
-      ++xterm.npars;
-    xterm.state = ESgotpars;
-  }
+     if (c == ';' && xterm.npars < NPARS) {
+          xterm.npars++;
+          xterm.state = ESgetpars;
+          return 1;
+     } else if (isdigit(c)) {
+          xterm.pars[xterm.npars] *= 10;
+          xterm.pars[xterm.npars] += c - '0';
+          xterm.state = ESinpars;
+          return 1;
+     } else {
+          if (xterm.state == ESinpars)
+               ++xterm.npars;
+          xterm.state = ESgotpars;
+     }
 
-  return 0;                     /* return 0 if code wasn't consumed */
+     return 0;                     /* return 0 if code wasn't consumed */
 }
 
 
 
 static void goto_xy(register signed char x, register signed char y)
 {
-  if (x < 0)  x = 0;
-  else if (x >= xterm.nrows) x = xterm.ncols - 1;
+     if (x < 0)  x = 0;
+     else if (x >= xterm.nrows) x = xterm.ncols - 1;
 
-  if (y < 0)  y = 0;
-  else if (y >= xterm.nrows) y = xterm.nrows - 1;
+     if (y < 0)  y = 0;
+     else if (y >= xterm.nrows) y = xterm.nrows - 1;
 
-  xterm.xpos = x;
-  xterm.ypos = y;
+     xterm.xpos = x;
+     xterm.ypos = y;
 }
 
 
 
 static void do_SGR(void)
 {
-  unsigned char *ptr = xterm.pars;
-  while (xterm.npars--) {
-    register unsigned char par = *ptr++;
-      switch (par) {
-      case 0:                       /* reset/normal */
-        CLEAR_VIDEO(xterm.video);
-        break;
+     unsigned char *ptr = xterm.pars;
+     while (xterm.npars--) {
+          register unsigned char par = *ptr++;
+          switch (par) {
+          case 0:                       /* reset/normal */
+               CLEAR_VIDEO(xterm.video);
+               break;
 
-      case 1:                       /* bold */
-        xterm.video.bold = 1;
-        break;
+          case 1:                       /* bold */
+               xterm.video.bold = 1;
+               break;
 
-      case 2:                       /* Faint */
-        xterm.video.bold = 1;
-        break;
+          case 2:                       /* Faint */
+               xterm.video.bold = 1;
+               break;
 
-      case 4:                       /* underline */
-        xterm.video.underline = 1;
-        break;
+          case 4:                       /* underline */
+               xterm.video.underline = 1;
+               break;
 
-      case 7:                       /* reverse video */
-        xterm.video.reverse = 1;
-        break;
+          case 7:                       /* reverse video */
+               xterm.video.reverse = 1;
+               break;
 
-      case 22:                      /* not bold */
-        xterm.video.bold = 0;
-        break;
+          case 22:                      /* not bold */
+               xterm.video.bold = 0;
+               break;
 
-      case 24:                      /* not underline */
-        xterm.video.underline = 0;
-        break;;
+          case 24:                      /* not underline */
+               xterm.video.underline = 0;
+               break;;
 
-      case 27:                      /* positive video */
-        xterm.video.reverse = 0;
-        break;
+          case 27:                      /* positive video */
+               xterm.video.reverse = 0;
+               break;
 
 
-      case 38:                      /* ANSI X3.64-1979 (SCO-ish?) */
-        xterm.video.underline = 1;  /* Enable underline and white foreground */
-        xterm.video.fg = 7;
-        break;
+          case 38:                      /* ANSI X3.64-1979 (SCO-ish?) */
+               xterm.video.underline = 1;  /* Enable underline and white */
+               xterm.video.fg = 7;         /* foreground  */
+               break;
 
-      case 39:                           /* ANSI X3.64-1979 (SCO-ish?) */
-        xterm.video.underline = 0;       /* Disable underline and default */
-        xterm.video.fg = xterm.bg_color; /* foreground */
-        break;;
+          case 39:                           /* ANSI X3.64-1979 (SCO-ish?) */
+               xterm.video.underline = 0;       /* Disable underline and  */
+               xterm.video.fg = xterm.bg_color; /* default foreground */
+               break;;
 
-      case 49:
-      default:
-        if (par >= 10 && par <= 20) {
-          /* TODO: selecting font */
-        }
+          case 49:
+          default:
+               if (par >= 10 && par <= 20) {
+                    /* TODO: selecting font */
+               }
 
-        if (par >= 30 && par <= 37) {
-          xterm.video.fg = par - 30;
-          break;
-        }
+               if (par >= 30 && par <= 37) {
+                    xterm.video.fg = par - 30;
+                    break;
+               }
 
-        if (par >= 40 && par <= 47) {
-          xterm.video.bg = par - 40;
-          break;
-        }
-      }
-  }
+               if (par >= 40 && par <= 47) {
+                    xterm.video.bg = par - 40;
+                    break;
+               }
+          }
+     }
 }
 
 
@@ -351,15 +351,15 @@ static void do_SGR(void)
 
 static void scroll_region(unsigned char par1, unsigned char par2)
 {
-  if (!par1)  ++par1;
-  if (!par2)  par2 = xterm.nrows;
+     if (!par1)  ++par1;
+     if (!par2)  par2 = xterm.nrows;
 
-  if (par1 < par2 && par2 <= xterm.nrows) { /* Minimum allowed region */
-    xterm.top = par1;                       /*is 2 lines */
-    xterm.botton = par2;
-    /* TODO: Cursor must go to home position */
-  }
-  return;
+     if (par1 < par2 && par2 <= xterm.nrows) { /* Minimum allowed region */
+          xterm.top = par1;                       /*is 2 lines */
+          xterm.botton = par2;
+          /* TODO: Cursor must go to home position */
+     }
+     return;
 }
 
 
@@ -384,119 +384,119 @@ static void erase_in_display(unsigned char par1)
 
 static void do_gotpars(register unsigned char  c)
 {
-  unsigned char par1 = xterm.pars[0], par2 = xterm.pars[0];
-  register signed char x = xterm.xpos, y = xterm.ypos;
+     unsigned char par1 = xterm.pars[0], par2 = xterm.pars[0];
+     register signed char x = xterm.xpos, y = xterm.ypos;
 
-  xterm.state = ESnormal;
-  if (!xterm.question) {
-    /* TODO: Implement operations */
-    switch (c) {
-    case 'A':                     /* Cursor up (CUU) */
-      if (!par1)  ++par1;
-      y -= par1;
-      goto_xy(x,y);
-      return;
+     xterm.state = ESnormal;
+     if (!xterm.question) {
+          /* TODO: Implement operations */
+          switch (c) {
+          case 'A':                     /* Cursor up (CUU) */
+               if (!par1)  ++par1;
+               y -= par1;
+               goto_xy(x,y);
+               return;
 
-    case 'B':                     /* Cursor down (CUD) */
-      if (!par1) ++par1;
-      y += par1;
-      goto_xy(x,y);
-      return;
+          case 'B':                     /* Cursor down (CUD) */
+               if (!par1) ++par1;
+               y += par1;
+               goto_xy(x,y);
+               return;
 
-    case 'C':                     /* Cursor forward (CUF) */
-      if (!par1) ++par1;
-      y += par1;
-      goto_xy(x,y);
-      return;
+          case 'C':                     /* Cursor forward (CUF) */
+               if (!par1) ++par1;
+               y += par1;
+               goto_xy(x,y);
+               return;
 
-    case 'D':                     /* Cursor backward (CUB) */
-      if (!par1) ++par1;
-      y += par1;
-      goto_xy(x,y);
-      return;
+          case 'D':                     /* Cursor backward (CUB) */
+               if (!par1) ++par1;
+               y += par1;
+               goto_xy(x,y);
+               return;
 
-    case 'H':                     /* Cursor position (CUP) */
-      if (!par1) ++par1;
-      if (!par2) ++par2;
-      x = par1;
-      y = par2;
-      goto_xy(x,y);
-      return;
+          case 'H':                     /* Cursor position (CUP) */
+               if (!par1) ++par1;
+               if (!par2) ++par2;
+               x = par1;
+               y = par2;
+               goto_xy(x,y);
+               return;
 
-    case 'm':                     /* Character attributes (SGR) */
-      do_SGR();
-      return;
+          case 'm':                     /* Character attributes (SGR) */
+               do_SGR();
+               return;
 
-    case '@':                     /* Insert blank (ICH) */
-    case 'J':                     /* Erase in display (ED) */
-      erase_in_display(par1);
-      return;
+          case '@':                     /* Insert blank (ICH) */
+          case 'J':                     /* Erase in display (ED) */
+               erase_in_display(par1);
+               return;
 
-    case 'K':                     /* Erase in line (EL) */
-      erase_in_line(par1);
-      return;
+          case 'K':                     /* Erase in line (EL) */
+               erase_in_line(par1);
+               return;
 
-    case 'L':                     /* Insert lines (IL) */
-    case 'M':                     /* Delete lines (DL) */
-    case 'P':                     /* Delete characters (DCH) */
-    case 'T':                     /* Initiate hilite mouse tracking */
-    case 'c':                     /* Send device attributes (DA) */
-    case 'f':                     /* Horizontal and vertical pos (HVP) */
-    case 'g':                     /* Tab clear (TBC) */
-    case 'h':                     /* Set mode (SM) */
-    case 'l':                     /* Reset mode (RM) */
-    case 'n':                     /* Device status report (DSR) */
+          case 'L':                     /* Insert lines (IL) */
+          case 'M':                     /* Delete lines (DL) */
+          case 'P':                     /* Delete characters (DCH) */
+          case 'T':                     /* Initiate hilite mouse tracking */
+          case 'c':                     /* Send device attributes (DA) */
+          case 'f':                     /* Horizontal and vertical pos (HVP) */
+          case 'g':                     /* Tab clear (TBC) */
+          case 'h':                     /* Set mode (SM) */
+          case 'l':                     /* Reset mode (RM) */
+          case 'n':                     /* Device status report (DSR) */
 
-    case 'r':                     /* Set scrolling Region (DECSTBM) */
-      scroll_region(par1, par2);
-      return;
+          case 'r':                     /* Set scrolling Region (DECSTBM) */
+               scroll_region(par1, par2);
+               return;
 
-    case 'x':               /* Request Terminal parameters (DECREQTPARM)*/
-      return;
-    }
-  } else {
-    switch (c) {
-    case 'h':                   /* DEC Private mode set (DECSET) */
-    case 'l':                   /* DEC Private mode reset (DECRST) */
-    case 'r':                   /* Restore DEC Private mode values */
-    case 's':                   /* Save DEC Private mode values */
-      return;
-    }
-  }
+          case 'x':               /* Request Terminal parameters (DECREQTPARM)*/
+               return;
+          }
+     } else {
+          switch (c) {
+          case 'h':                   /* DEC Private mode set (DECSET) */
+          case 'l':                   /* DEC Private mode reset (DECRST) */
+          case 'r':                   /* Restore DEC Private mode values */
+          case 's':                   /* Save DEC Private mode values */
+               return;
+          }
+     }
 }
 
 
 static void do_state(register unsigned char c)
 {
-  switch (xterm.state) {
-  case ESesc:
-    doESC(c);
-    return;
+     switch (xterm.state) {
+     case ESesc:
+          doESC(c);
+          return;
 
-  case ESsquare:
-    if (do_square(c))
-      return;
+     case ESsquare:
+          if (do_square(c))
+               return;
 
-  case ESinpars:
-  case ESgetpars:
-    if (do_getpars(c))
-      return;
+     case ESinpars:
+     case ESgetpars:
+          if (do_getpars(c))
+               return;
 
-  case ESgotpars:
-    do_gotpars(c);
-    return;
+     case ESgotpars:
+          do_gotpars(c);
+          return;
 
-    /* TODO: Implement this states */
-  case ESfunckey:
-  case EShash:
-  case ESsetG1:
-  case ESsetG0:
-  case ESpercent:
-  case ESignore:
-  case ESnonstd:
-  case ESpalette:
-    break;
-  }
+          /* TODO: Implement this states */
+     case ESfunckey:
+     case EShash:
+     case ESsetG1:
+     case ESsetG0:
+     case ESpercent:
+     case ESignore:
+     case ESnonstd:
+     case ESpalette:
+          break;
+     }
 }
 
 
@@ -504,60 +504,60 @@ static void do_state(register unsigned char c)
 
 static void ctrl_codes(register unsigned char c)
 {
-  switch (c) {
-  case 0x00:
-    return;
-  case 0x07:              /* BEL */
-    bell();
-    return;
+     switch (c) {
+     case 0x00:
+          return;
+     case 0x07:              /* BEL */
+          bell();
+          return;
 
-  case 0x08:              /* BS */
-    bs();
-    goto act_ptr;
+     case 0x08:              /* BS */
+          bs();
+          goto act_ptr;
 
-  case 0x09:              /* TAB */
-    tab();
-    goto act_ptr;
+     case 0x09:              /* TAB */
+          tab();
+          goto act_ptr;
 
-  case 0x0a:              /* LF */
-    lf();
-    if (is_kbd(KBD_CRLF))
-      goto act_ptr;
+     case 0x0a:              /* LF */
+          lf();
+          if (is_kbd(KBD_CRLF))
+               goto act_ptr;
 
-  case 0x0b:              /* CR */
-    cr();
-    goto act_ptr;
+     case 0x0b:              /* CR */
+          cr();
+          goto act_ptr;
 
-  case 0x0e:              /* SO, set G1 charset */
-  case 0x0f:              /* SI, set G0 charset */
-    /* TODO: Implement SI and SO */
-    break;
+     case 0x0e:              /* SO, set G1 charset */
+     case 0x0f:              /* SI, set G0 charset */
+          /* TODO: Implement SI and SO */
+          break;
 
-  case 0x7f:              /* DEL */
-    del();
-    goto act_ptr;
+     case 0x7f:              /* DEL */
+          del();
+          goto act_ptr;
 
-  case 0x18:                 /* CAN character */
-  case 0x1a:                 /* SUB character */
-    xterm.state = ESnormal;  /* they must finish actual sequence */
-    return;
+     case 0x18:                 /* CAN character */
+     case 0x1a:                 /* SUB character */
+          xterm.state = ESnormal;  /* they must finish actual sequence */
+          return;
 
-  case 0x1b:                  /* ESC */
-    xterm.state = ESesc;
-    return;
+     case 0x1b:                  /* ESC */
+          xterm.state = ESesc;
+          return;
 
-  case 0x9b:                  /* meta ESC  */
-    xterm.state = ESsquare;
-    return;
-  }
+     case 0x9b:                  /* meta ESC  */
+          xterm.state = ESsquare;
+          return;
+     }
 
-  do_state(c);
+     do_state(c);
 
-  if (xterm.state != ESnormal)  /* we are inside a sequence yet */
-    return;
+     if (xterm.state != ESnormal)  /* we are inside a sequence yet */
+          return;
 
- act_ptr:
-  ptr_vram(xterm.xpos, xterm.ypos);
+act_ptr:
+     ptr_vram(xterm.xpos, xterm.ypos);
 }
 
 
@@ -567,19 +567,19 @@ static void ctrl_codes(register unsigned char c)
 
 void con_write (const void *buf, unsigned count)
 {
-  const unsigned char *bp = (unsigned char *) buf;
-  assert(count && buf);
-  hide_cursor();
+     const unsigned char *bp = (unsigned char *) buf;
+     assert(count && buf);
+     hide_cursor();
 
-  do {
-    unsigned char c = *bp++;
+     do {
+          unsigned char c = *bp++;
 
-    if (xterm.state != ESnormal || c < 0x20 || c == 0x9b)
-      ctrl_codes(c);
-    else
-      write_char(c);
+          if (xterm.state != ESnormal || c < 0x20 || c == 0x9b)
+               ctrl_codes(c);
+          else
+               write_char(c);
 
-  } while (--count);
+     } while (--count);
 
-  enable_cursor();
+     enable_cursor();
 }

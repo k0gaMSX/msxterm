@@ -10,7 +10,7 @@
 
 #define K(type,x)     ((x) | (type)<<8)
 #define KTYP(x)        ((x)>>8 & 0xff)
-#define KVAL(x)		((x) & 0xff)
+#define KVAL(x)         ((x) & 0xff)
 
 #define KT_LATIN       0                /* we depend of this value */
 #define KT_LETTER      1
@@ -117,45 +117,45 @@
 
 
 unsigned short plain_map[NR_KEYS] = {
-  K_0    ,K_1     ,K_2    ,K_3    ,K_4    ,K_5     ,K_6     ,K_7      ,
-  K_8    ,K_9     ,K_SCORE,K_EQUAL,K_IBAR ,K_LCLASP,K_RCLASP,K_SEMIC  ,
-  K_APOST,K_SQUOTE,K_COMA ,K_DOT  ,K_BAR  ,0      ,K_a      ,K_b      ,
-  K_c    ,K_d     ,K_e    ,K_f    ,K_g    ,K_h    ,K_i      ,K_j      ,
-  K_k    ,K_l     ,K_m    ,K_n    ,K_o    ,K_p    ,K_q      ,K_r      ,
-  K_s    ,K_t     ,K_u    ,K_v    ,K_w    ,K_x    ,K_y      ,K_z      ,
-  K_SHIFT,K_CTRL  ,0      ,0      ,0      ,0      ,0        ,0        ,
-  0      ,0       ,K_ESC  ,0      ,0      ,0      ,0        ,0        ,
-  K_SPACE,0       ,0      ,0      ,0      ,0      ,0        ,0
+     K_0    ,K_1     ,K_2    ,K_3    ,K_4    ,K_5     ,K_6     ,K_7      ,
+     K_8    ,K_9     ,K_SCORE,K_EQUAL,K_IBAR ,K_LCLASP,K_RCLASP,K_SEMIC  ,
+     K_APOST,K_SQUOTE,K_COMA ,K_DOT  ,K_BAR  ,0      ,K_a      ,K_b      ,
+     K_c    ,K_d     ,K_e    ,K_f    ,K_g    ,K_h    ,K_i      ,K_j      ,
+     K_k    ,K_l     ,K_m    ,K_n    ,K_o    ,K_p    ,K_q      ,K_r      ,
+     K_s    ,K_t     ,K_u    ,K_v    ,K_w    ,K_x    ,K_y      ,K_z      ,
+     K_SHIFT,K_CTRL  ,0      ,0      ,0      ,0      ,0        ,0        ,
+     0      ,0       ,K_ESC  ,0      ,0      ,0      ,0        ,0        ,
+     K_SPACE,0       ,0      ,0      ,0      ,0      ,0        ,0
 };
 
 unsigned short shift_map[NR_KEYS] = {
-  0      ,0       ,0      ,0      ,0      ,0      ,0        ,0        ,
-  0      ,0       ,0      ,0      ,0      ,0      ,0        ,0        ,
-  0      ,0       ,0      ,0      ,0      ,0      ,K_A      ,K_B      ,
-  K_C    ,K_D     ,K_E    ,K_F    ,K_G    ,K_H    ,K_I      ,K_J      ,
-  K_K    ,K_L     ,K_M    ,K_N    ,K_O    ,K_P    ,K_Q      ,K_R      ,
-  K_S    ,K_T     ,K_U    ,K_V    ,K_W    ,K_X    ,K_Y      ,K_Z      ,
-  K_SHIFT,K_CTRL  ,0      ,0      ,0      ,0      ,0        ,0        ,
-  0      ,0       ,K_ESC  ,0      ,0      ,0      ,0        ,0        ,
-  K_SPACE,0       ,0      ,0      ,0      ,0      ,0        ,0
+     0      ,0       ,0      ,0      ,0      ,0      ,0        ,0        ,
+     0      ,0       ,0      ,0      ,0      ,0      ,0        ,0        ,
+     0      ,0       ,0      ,0      ,0      ,0      ,K_A      ,K_B      ,
+     K_C    ,K_D     ,K_E    ,K_F    ,K_G    ,K_H    ,K_I      ,K_J      ,
+     K_K    ,K_L     ,K_M    ,K_N    ,K_O    ,K_P    ,K_Q      ,K_R      ,
+     K_S    ,K_T     ,K_U    ,K_V    ,K_W    ,K_X    ,K_Y      ,K_Z      ,
+     K_SHIFT,K_CTRL  ,0      ,0      ,0      ,0      ,0        ,0        ,
+     0      ,0       ,K_ESC  ,0      ,0      ,0      ,0        ,0        ,
+     K_SPACE,0       ,0      ,0      ,0      ,0      ,0        ,0
 };
 
 unsigned short ctrl_map[NR_KEYS] = {
-  0
+     0
 };
 
 
 unsigned short ctrl_shift_map[NR_KEYS] = {
-  0
+     0
 };
 
 
 unsigned short graph_map[NR_KEYS] = {
-  0
+     0
 };
 
 unsigned short ctrl_graph_map[NR_KEYS] = {
-  0
+     0
 };
 
 
@@ -165,11 +165,11 @@ unsigned char keymaps_count = 7;
 
 
 unsigned short *key_maps[MAX_NR_KEYMAPS] = {
-  plain_map,
-  shift_map,
-  ctrl_map, ctrl_shift_map,
-  graph_map,
-  ctrl_graph_map, ctrl_graph_map
+     plain_map,
+     shift_map,
+     ctrl_map, ctrl_shift_map,
+     graph_map,
+     ctrl_graph_map, ctrl_graph_map
 };
 
 
