@@ -66,6 +66,9 @@ struct term {
      unsigned char pars[NPARS];
      unsigned char npars;
 
+     unsigned char need_wrap;
+     unsigned char decawm;      /* Autowrap Mode */
+
      unsigned char xpos, ypos, xpos_s, ypos_s;
      struct video_att video, video_s;
      unsigned char bg_color;

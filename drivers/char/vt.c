@@ -31,6 +31,7 @@ static void reset_terminal(void)
      xterm.video_s = xterm.video;
      ptr_vram(0, 0);
 
+     xterm.decawm = 1;
      xterm.mode = VT100_MODE;
      xterm.state = ESnormal;
      enable_cursor();
@@ -48,7 +49,6 @@ void con_init(void)
 }
 
 
-/* TODO: deal with wrap seetings */
 
 
 
@@ -56,7 +56,7 @@ static void bs(void)
 {
      if (xterm.xpos) {
           --xterm.xpos;
-/*    xterm.att.vc_need_wrap = 0;                                         */
+          xterm.need_wrap = 0;
      }
 }
 
@@ -75,20 +75,19 @@ static void tab(void)
 static void lf(void)
 {
      if (xterm.ypos == xterm.nrows) {
-          ;/* do scrolling ... */
+          ;/* TODO: do scrolling ... */
      } else {
           ++xterm.ypos;
      }
 
-/*  xterm.att.vc_need_wrap = 0;                                           */
-}
+     xterm.need_wrap = 0;       /* if we don't clear this, we can get */
+}                               /* 2 added lines if we are in last column */
 
 
 
 static void cr(void)
 {
-     xterm.xpos = 0;
-/*  xterm.att.vc_need_wrap = 0;                                           */
+     xterm.xpos = xterm.need_wrap = 0;
 }
 
 
@@ -109,11 +108,13 @@ static void ri()
 
 static void write_char(unsigned char c)
 {
-     if (xterm.xpos < xterm.ncols) {
-          write_vram(c, xterm.video);
-          next_vram();
+     write_vram(c, xterm.video);
 
+     if (xterm.xpos == xterm.ncols - 1) {
+          xterm.need_wrap = xterm.decawm;
+     } else {
           ++xterm.xpos;
+          next_vram();
      }
 }
 
@@ -404,6 +405,7 @@ static void set_mode(unsigned char on_off)
                     break;
 
                case 7:               /* Autowrap on/off */
+                    xterm.decawm = on_off;
                     break;
 
                case 8:               /* Autorepeat on/off */
@@ -630,10 +632,16 @@ void con_write (const void *buf, unsigned count)
      do {
           unsigned char c = *bp++;
 
-          if (xterm.state != ESnormal || c < 0x20 || c == 0x9b)
+          if (xterm.state != ESnormal || c < 0x20 || c == 0x9b) {
                ctrl_codes(c);
-          else
+          } else {
+               if (xterm.need_wrap) {
+                    cr(), lf();                /* adds new line */
+                    ptr_vram(xterm.xpos, xterm.ypos);
+               }
+
                write_char(c);
+          }
 
      } while (--count);
 
