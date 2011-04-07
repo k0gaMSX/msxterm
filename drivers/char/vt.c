@@ -267,11 +267,11 @@ static unsigned char do_getpars(register unsigned char c)
 
 static void goto_xy(register signed char x, register signed char y)
 {
-     if (x < 0)  x = 0;
-     else if (x >= xterm.nrows) x = xterm.ncols - 1;
+    if (x < 0)  x = 0;
+   else if (x >= xterm.ncols) x = xterm.ncols - 1;
 
-     if (y < 0)  y = 0;
-     else if (y >= xterm.nrows) y = xterm.nrows - 1;
+    if (y < 0)  y = 0;
+    else if (y > xterm.nrows) y = xterm.nrows - 1;
 
      xterm.xpos = x;
      xterm.ypos = y;
@@ -450,13 +450,13 @@ static void do_gotpars(register unsigned char  c)
 
           case 'C':                     /* Cursor forward (CUF) */
                if (!par1) ++par1;
-               y += par1;
+               x += par1;
                goto_xy(x,y);
                return;
 
           case 'D':                     /* Cursor backward (CUB) */
                if (!par1) ++par1;
-               y += par1;
+               x -= par1;
                goto_xy(x,y);
                return;
 
