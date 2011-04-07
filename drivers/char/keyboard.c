@@ -15,10 +15,10 @@ static unsigned char lock_state;
 
 
 typedef void k_handler_fn(unsigned char keysym, unsigned char up);
-static k_handler_fn k_self, k_meta, k_shift;
+static k_handler_fn k_self, k_meta, k_shift, k_cur;
 
 static k_handler_fn *k_handlers[16] = {
-     k_self, k_self, k_self, k_shift
+     k_self, k_self, k_self, k_shift, k_self, k_cur
 };
 
 
@@ -48,6 +48,24 @@ static void k_lock(unsigned char value, unsigned char up)
 {
      if (!up)
           lock_state ^= 1<<value;
+}
+
+
+static void applkey(unsigned char key, char mode)
+{
+     static char buff[] = {0x1b, 0, 0, 0};
+
+     buff[1] = (mode ? '0' : '[');
+     buff[2] = key;
+     puts_queue(buff, 3);
+}
+
+
+
+static void k_cur(unsigned char value, unsigned char up)
+{
+     if (!up)
+          applkey(value, 0);
 }
 
 
