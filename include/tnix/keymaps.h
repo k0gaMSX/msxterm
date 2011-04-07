@@ -1,4 +1,4 @@
-
+/* -*- mode: c ; encoding: iso-8859-1 -*- */
 
 #define NR_KEYS        88
 #define MAX_NR_KEYMAPS 10
@@ -17,10 +17,11 @@
 #define KT_DEAD        2
 #define KT_SHIFT       3
 #define KT_FN          4
-
+#define KT_CUR         5
 
 #define K_LETTER(x)   (K(KT_LETTER, x))
 #define K_LATIN(x)    (K(KT_LATIN, x))
+
 
 #define K_0         K_LATIN('0')
 #define K_1         K_LATIN('1')
@@ -33,18 +34,39 @@
 #define K_8         K_LATIN('8')
 #define K_9         K_LATIN('9')
 
-#define K_SCORE    K_LATIN('-')
-#define K_EQUAL    K_LATIN('=')
-#define K_IBAR     K_LATIN('\\')
-#define K_LCLASP   K_LATIN('[')
-#define K_RCLASP   K_LATIN(']')
-#define K_SEMIC    K_LATIN(';')
-#define K_APOST    K_LATIN('\'')
-#define K_SQUOTE   K_LATIN('`')
-#define K_COMA     K_LATIN(',')
-#define K_BAR      K_LATIN('/')
-#define K_DOT      K_LATIN('.')
-#define K_SPACE    K_LATIN(' ')
+#define K_SCORE     K_LATIN('-')
+#define K_EQUAL     K_LATIN('=')
+#define K_IBAR      K_LATIN('\\')
+#define K_LCLASP    K_LATIN('[')
+#define K_RCLASP    K_LATIN(']')
+#define K_SEMIC     K_LATIN(';')
+#define K_APOST     K_LATIN('\'')
+#define K_SQUOT     K_LATIN('`')
+#define K_COMA      K_LATIN(',')
+#define K_BAR       K_LATIN('/')
+#define K_DOT       K_LATIN('.')
+#define K_DOUDOT    K_LATIN(':')
+#define K_SPACE     K_LATIN(' ')
+#define K_ARORB     K_LATIN('@')
+#define K_ADMIR     K_LATIN('!')
+#define K_QUOTE     K_LATIN('"')
+#define K_HASH      K_LATIN('#')
+#define K_DOLLA     K_LATIN('$')
+#define K_PERCE     K_LATIN('%')
+#define K_AMPER     K_LATIN('&')
+#define K_LPARE     K_LATIN('(')
+#define K_RPARE     K_LATIN(')')
+#define K_LBRACE    K_LATIN('{')
+#define K_RBRACE    K_LATIN('}')
+#define K_PIPE      K_LATIN('|')
+#define K_TILDE     K_LATIN('~')
+#define K_LESS      K_LATIN('<')
+#define K_GREAT     K_LATIN('>')
+#define K_QUEST     K_LATIN('?')
+#define K_ASTER     K_LATIN('*')
+#define K_PLUS      K_LATIN('+')
+#define K_SUBS      K_LATIN('_')
+#define K_TABS      K_LATIN('\t')
 
 #define K_a        K_LETTER('a')
 #define K_b        K_LETTER('b')
@@ -114,30 +136,34 @@
 #define K_F9       K(KT_FN, 9)
 #define K_F10      K(KT_FN, 10)
 
+#define K_DOWN    K(KT_CUR, 'B')
+#define K_LEFT    K(KT_CUR, 'D')
+#define K_RIGHT   K(KT_CUR, 'C')
+#define K_UP      K(KT_CUR, 'A')
 
 
 unsigned short plain_map[NR_KEYS] = {
-     K_0    ,K_1     ,K_2    ,K_3    ,K_4    ,K_5     ,K_6     ,K_7      ,
-     K_8    ,K_9     ,K_SCORE,K_EQUAL,K_IBAR ,K_LCLASP,K_RCLASP,K_SEMIC  ,
-     K_APOST,K_SQUOTE,K_COMA ,K_DOT  ,K_BAR  ,0      ,K_a      ,K_b      ,
-     K_c    ,K_d     ,K_e    ,K_f    ,K_g    ,K_h    ,K_i      ,K_j      ,
-     K_k    ,K_l     ,K_m    ,K_n    ,K_o    ,K_p    ,K_q      ,K_r      ,
-     K_s    ,K_t     ,K_u    ,K_v    ,K_w    ,K_x    ,K_y      ,K_z      ,
-     K_SHIFT,K_CTRL  ,0      ,0      ,0      ,0      ,0        ,0        ,
-     0      ,0       ,K_ESC  ,0      ,0      ,0      ,0        ,0        ,
-     K_SPACE,0       ,0      ,0      ,0      ,0      ,0        ,0
+     K_0    ,K_1     ,K_2    ,K_3    ,K_4    ,K_5      ,K_6      ,K_7      ,
+     K_8    ,K_9     ,K_SCORE,0      ,K_IBAR ,K_ARORB  ,K_LCLASP ,K_SEMIC  ,
+     K_DOUDOT,K_RCLASP,K_COMA ,K_DOT ,K_BAR  ,0        ,K_a      ,K_b      ,
+     K_c    ,K_d     ,K_e    ,K_f    ,K_g    ,K_h      ,K_i      ,K_j      ,
+     K_k    ,K_l     ,K_m    ,K_n    ,K_o    ,K_p      ,K_q      ,K_r      ,
+     K_s    ,K_t     ,K_u    ,K_v    ,K_w    ,K_x      ,K_y      ,K_z      ,
+     K_SHIFT,K_CTRL  ,0      ,0      ,0      ,K_F1     ,K_F2     ,K_F3     ,
+     K_F4   ,K_F5    ,K_ESC  ,K_TABS ,0      ,0        ,0        ,0        ,
+     K_SPACE,0       ,0      , 0     ,K_LEFT ,K_UP     ,K_DOWN   ,K_RIGHT
 };
 
 unsigned short shift_map[NR_KEYS] = {
-     0      ,0       ,0      ,0      ,0      ,0      ,0        ,0        ,
-     0      ,0       ,0      ,0      ,0      ,0      ,0        ,0        ,
-     0      ,0       ,0      ,0      ,0      ,0      ,K_A      ,K_B      ,
-     K_C    ,K_D     ,K_E    ,K_F    ,K_G    ,K_H    ,K_I      ,K_J      ,
-     K_K    ,K_L     ,K_M    ,K_N    ,K_O    ,K_P    ,K_Q      ,K_R      ,
-     K_S    ,K_T     ,K_U    ,K_V    ,K_W    ,K_X    ,K_Y      ,K_Z      ,
-     K_SHIFT,K_CTRL  ,0      ,0      ,0      ,0      ,0        ,0        ,
-     0      ,0       ,K_ESC  ,0      ,0      ,0      ,0        ,0        ,
-     K_SPACE,0       ,0      ,0      ,0      ,0      ,0        ,0
+     0      ,K_ADMIR ,K_QUOTE ,K_HASH   ,K_DOLLA,K_PERCE,K_AMPER  ,0        ,
+     K_LPARE,K_RPARE ,K_EQUAL ,K_TILDE  ,K_PIPE ,K_SQUOT,K_LBRACE ,K_PLUS   ,
+     K_ASTER,K_RBRACE,K_LESS  ,K_GREAT  ,K_QUEST,K_SUBS ,K_A      ,K_B      ,
+     K_C    ,K_D     ,K_E     ,K_F      ,K_G    ,K_H    ,K_I      ,K_J      ,
+     K_K    ,K_L     ,K_M     ,K_N      ,K_O    ,K_P    ,K_Q      ,K_R      ,
+     K_S    ,K_T     ,K_U     ,K_V      ,K_W    ,K_X    ,K_Y      ,K_Z      ,
+     K_SHIFT,K_CTRL  ,0       ,0        ,0      ,K_F6   ,K_F7     ,K_F8     ,
+     K_F9   ,K_F10   ,K_ESC   ,K_TABS   ,0      ,0      ,0        ,0        ,
+     K_SPACE,0       ,0       ,0        ,K_LEFT ,K_UP   ,K_DOWN   ,K_RIGHT
 };
 
 unsigned short ctrl_map[NR_KEYS] = {
