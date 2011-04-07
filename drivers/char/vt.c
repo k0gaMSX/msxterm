@@ -382,6 +382,49 @@ static void erase_in_display(unsigned char par1)
 
 
 
+static void set_mode(unsigned char on_off)
+{
+     unsigned char *ptr = xterm.pars;
+
+     /* TODO: Implement operations */
+     while (xterm.npars--) {
+          register unsigned char par = *ptr++;
+          if (xterm.question) {
+               switch (par) {   /* DEC private modes */
+               case 1:               /* cursor keys send ^[0x/^[[x */
+                    break;
+
+               case 3:               /* 80/32 mode */
+                    break;
+
+               case 5:               /* inverted screen on/off */
+                    break;
+
+               case 6:               /* origin relative/absolute */
+                    break;
+
+               case 7:               /* Autowrap on/off */
+                    break;
+
+               case 8:               /* Autorepeat on/off */
+                    break;
+               }
+          } else {
+               switch (par) {   /* ANSI modes set/reset */
+               case 3:             /* Monitor (display ctrls) */
+                    break;
+
+               case 4:             /* Insert mode on/off */
+                    break;
+
+               case 20:            /* Lf, Enter == CrLf/Lf */
+                    break;
+               }
+          }
+     }
+}
+
+
 static void do_gotpars(register unsigned char  c)
 {
      unsigned char par1 = xterm.pars[0], par2 = xterm.pars[0];
@@ -443,8 +486,16 @@ static void do_gotpars(register unsigned char  c)
           case 'c':                     /* Send device attributes (DA) */
           case 'f':                     /* Horizontal and vertical pos (HVP) */
           case 'g':                     /* Tab clear (TBC) */
+               return;
+
           case 'h':                     /* Set mode (SM) */
+               set_mode(1);
+               return;
+
           case 'l':                     /* Reset mode (RM) */
+               set_mode(0);
+               return;
+
           case 'n':                     /* Device status report (DSR) */
 
           case 'r':                     /* Set scrolling Region (DECSTBM) */
@@ -457,7 +508,12 @@ static void do_gotpars(register unsigned char  c)
      } else {
           switch (c) {
           case 'h':                   /* DEC Private mode set (DECSET) */
+               set_mode(1);
+               return;
           case 'l':                   /* DEC Private mode reset (DECRST) */
+               set_mode(0);
+               return;
+
           case 'r':                   /* Restore DEC Private mode values */
           case 's':                   /* Save DEC Private mode values */
                return;
