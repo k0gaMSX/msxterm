@@ -31,8 +31,13 @@ static uint8_t fonts[] = {
 };
 
 
+extern void v9958_init(void);
+
 void arch_init(void)
 {
-     vdp_init();
+     v9958_init();
+     v9990_init();
      write_glyphs(fonts, GLYPH_SIZE);
+     request_irq(v9990_handler, NULL);
 }
+

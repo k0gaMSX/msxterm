@@ -35,6 +35,7 @@ VRAM_READ_REG        equ 3
 SCRMODE0_REG         equ 6
 SCRMODE1_REG         equ 7
 CONTROL_REG          equ 8
+INTCONF_REG          equ 9
 PALETTE_CTRL_REG     equ 13
 PALETTE_PTR_REG      equ 14
 BACKDROP_REG         equ 15
@@ -513,11 +514,16 @@ cursor:
 
 
         psect   text
-        global  _vdp_init
-        signat  _vdp_init,24
-_vdp_init:
+        global  _v9990_init
+        signat  _v9990_init,24
+_v9990_init:
         call    reset           ;reset the chip
         call    _videomode
+
+        ld      a,INTCONF_REG
+        out     (SELECT_PORT),a
+        ld      a,1             ;enable vertical interrupt
+        out     (DATA_PORT),a
 
         ld      de,pallete      ;set default pallete
         call    _setpal
@@ -531,4 +537,18 @@ _vdp_init:
         ld      de,0            ;set the cursor in initial position
         ld      bc,0
         call    _set_cursor_pos
+        ret
+
+
+        global  _kbd_hook
+        global  _v9990_handler
+        signat  _v9990_handler,4153
+_v9990_handler:
+        in      a,(INT_PORT)
+        and     1
+        out    (INT_PORT),a
+        ret     z
+
+        call   _kbd_hook
+        ld      a,1
         ret

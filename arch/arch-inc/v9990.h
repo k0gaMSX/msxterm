@@ -102,7 +102,7 @@ struct LMMMpars {
 
 
 extern void setpal(const uint8_t * pal);
-extern void vdp_init(void);
+extern void v9990_init(void);
 extern void setspd(void);
 extern void resetspd(void);
 extern void set_cursor_pos(unsigned x, unsigned y);
@@ -114,6 +114,7 @@ extern void waitce(void);
 extern void waittr(void);
 extern void v9990cmd(void *cmd);
 extern void videomode(void);
+extern unsigned char v9990_handler(void *data);
 
 #define NUMBER_OF_PARS 21
 #endif /* V9990_H_ */
