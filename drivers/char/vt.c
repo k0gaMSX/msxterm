@@ -434,7 +434,7 @@ static void set_mode(unsigned char on_off)
 
 static void do_gotpars(register unsigned char  c)
 {
-     unsigned char par1 = xterm.pars[0], par2 = xterm.pars[0];
+     unsigned char par1 = xterm.pars[0], par2 = xterm.pars[1];
      register signed char x = xterm.xpos, y = xterm.ypos;
 
      xterm.state = ESnormal;
