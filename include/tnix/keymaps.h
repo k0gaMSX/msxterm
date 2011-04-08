@@ -1,4 +1,4 @@
-/* -*- mode: c ; encoding: iso-8859-1 -*- */
+/* -*- mode: c ; coding: iso-8859-1 -*- */
 
 #define NR_KEYS        88
 #define MAX_NR_KEYMAPS 10
