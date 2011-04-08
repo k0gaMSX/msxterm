@@ -24,4 +24,5 @@ void enable_cursor(void);
 void write_glyphs(uint8_t *buf_font, uint8_t height);
 uint8_t read_glyphs(uint8_t *buf_font);
 void clean_vram(void);
+void vram_size(unsigned char cols, unsigned char rows);
 #endif /* _VRAM_H_ */

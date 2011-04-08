@@ -20,8 +20,12 @@ enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESinpars,
 #define DEFAULT_BG_COLOR 0
 #define DEFAULT_FG_COLOR 7
 
+
+static void save_cur(void);
+
 static void reset_terminal(void)
 {
+     vram_size(xterm.ncols, xterm.nrows);
      clean_vram();
      xterm.xpos = xterm.ypos = 0;
 
@@ -30,7 +34,7 @@ static void reset_terminal(void)
      xterm.botton = xterm.nrows - 1;
      xterm.video.fg = xterm.fg_color;
      xterm.video.bg = xterm.bg_color;
-     xterm.video_s = xterm.video;
+     save_cur();
      ptr_vram(0, 0);
 
      kbd_setmode(KBD_CRLF);
@@ -402,6 +406,18 @@ static void erase_in_display(unsigned char par1)
 
 
 
+void con_resize(unsigned char cols, unsigned char rows)
+{
+     assert(cols <= 128 && rows <= 48);
+     xterm.ncols = cols;
+     xterm.botton = (xterm.nrows = rows) - 1;
+     xterm.top = 0;
+     save_cur();
+     vram_size(cols, rows);
+}
+
+
+
 static void set_mode(unsigned char on_off)
 {
      unsigned char *ptr = xterm.pars;
@@ -414,7 +430,8 @@ static void set_mode(unsigned char on_off)
                case 1:               /* cursor keys send ^[0x/^[[x */
                     break;
 
-               case 3:               /* 80/32 mode */
+               case 3:               /* 80/132 mode */
+                    con_resize((on_off) ? 128 : 80, xterm.nrows);
                     break;
 
                case 5:               /* inverted screen on/off */

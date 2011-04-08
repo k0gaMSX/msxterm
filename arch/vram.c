@@ -7,9 +7,16 @@
 #define FONT_PAGE            0x06
 #define FONT_OFFSET          0x8000
 #define FONT_ADDRESS         (((uint32_t) FONT_PAGE << 16) |  FONT_OFFSET)
-#define MAX_COLUMN           80
 
-static unsigned short vram_x, vram_y, vram_height;
+static unsigned short vram_x, vram_y, vram_height, vram_ncols, vram_nrows;
+
+
+void vram_size(unsigned char cols, unsigned char rows)
+{
+     assert(cols <= 128 && rows <= 48);
+     vram_ncols = cols;
+     vram_nrows = rows;
+}
 
 
 void clean_vram(void)
@@ -36,7 +43,7 @@ void prev_vram(void)
 
 void next_vram(void)
 {
-  if ((vram_x += 8) > MAX_COLUMN * 8) {
+  if ((vram_x += 8) > vram_ncols * 8) {
     vram_x = 0;
     vram_y += vram_height;
   }
@@ -47,7 +54,7 @@ void next_vram(void)
 
 void ptr_vram(uint8_t x, uint8_t y)
 {
-  assert(x < 1024/8 &&  y < 256/8);
+  assert(x < vram_ncols &&  y < vram_nrows);
   vram_x = x * 8;
   vram_y = y * vram_height;
 }
