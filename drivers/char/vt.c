@@ -305,6 +305,8 @@ static void do_SGR(void)
           switch (par) {
           case 0:                       /* reset/normal */
                CLEAR_VIDEO(xterm.video);
+               xterm.video.fg = xterm.fg_color;
+               xterm.video.bg = xterm.bg_color;
                break;
 
           case 1:                       /* bold */
