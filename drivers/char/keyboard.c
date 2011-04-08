@@ -26,7 +26,7 @@ static k_handler_fn *k_handlers[16] = {
 
 unsigned char is_kbd(unsigned char test)
 {
-     return 1;
+     return test & kbd_mode;
 }
 
 

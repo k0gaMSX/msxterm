@@ -18,7 +18,7 @@ static struct int_action {
 void sys_init(void)
 {
      con_init();
-     printk("Booting tnix");
+     printk("Booting tnix\n");
 }
 
 

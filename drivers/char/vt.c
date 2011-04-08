@@ -31,6 +31,7 @@ static void reset_terminal(void)
      xterm.video_s = xterm.video;
      ptr_vram(0, 0);
 
+     kbd_setmode(KBD_CRLF);
      xterm.decawm = 1;
      xterm.mode = VT100_MODE;
      xterm.state = ESnormal;
@@ -420,6 +421,10 @@ static void set_mode(unsigned char on_off)
                     break;
 
                case 20:            /* Lf, Enter == CrLf/Lf */
+                    if (on_off)
+                         kbd_setmode(KBD_CRLF);
+                    else
+                         kbd_rstmode(KBD_CRLF);
                     break;
                }
           }
@@ -579,7 +584,7 @@ static void ctrl_codes(register unsigned char c)
 
      case 0x0a:              /* LF */
           lf();
-          if (is_kbd(KBD_CRLF))
+          if (!is_kbd(KBD_CRLF))
                goto act_ptr;
 
      case 0x0b:              /* CR */
