@@ -26,6 +26,8 @@ static void reset_terminal(void)
      xterm.xpos = xterm.ypos = 0;
 
      CLEAR_VIDEO(xterm.video);
+     xterm.top = 0;
+     xterm.botton = xterm.nrows - 1;
      xterm.video.fg = xterm.fg_color;
      xterm.video.bg = xterm.bg_color;
      xterm.video_s = xterm.video;
@@ -33,6 +35,7 @@ static void reset_terminal(void)
 
      kbd_setmode(KBD_CRLF);
      xterm.decawm = 1;
+     xterm.decom = 0;
      xterm.mode = VT100_MODE;
      xterm.state = ESnormal;
      enable_cursor();
@@ -274,8 +277,22 @@ static void goto_xy(register signed char x, register signed char y)
     if (y < 0)  y = 0;
     else if (y > xterm.nrows) y = xterm.nrows - 1;
 
+    if (xterm.decom) {
+         if (y < xterm.top)
+              y = xterm.top;
+         else if (y > xterm.botton)
+              y = xterm.botton;
+    }
+
      xterm.xpos = x;
      xterm.ypos = y;
+}
+
+
+
+static void goto_xay(signed char x, signed char y)
+{
+      goto_xy(x, xterm.decom ? y : y);
 }
 
 
@@ -359,9 +376,8 @@ static void scroll_region(unsigned char par1, unsigned char par2)
      if (par1 < par2 && par2 <= xterm.nrows) { /* Minimum allowed region */
           xterm.top = par1;                       /*is 2 lines */
           xterm.botton = par2;
-          /* TODO: Cursor must go to home position */
+          goto_xay(0, 0);
      }
-     return;
 }
 
 
@@ -403,6 +419,8 @@ static void set_mode(unsigned char on_off)
                     break;
 
                case 6:               /* origin relative/absolute */
+                    xterm.decom = on_off;
+                    goto_xay(0,0);
                     break;
 
                case 7:               /* Autowrap on/off */
@@ -470,7 +488,7 @@ static void do_gotpars(register unsigned char  c)
                if (!par2) ++par2;
                x = par1;
                y = par2;
-               goto_xy(x,y);
+               goto_xay(x,y);
                return;
 
           case 'm':                     /* Character attributes (SGR) */

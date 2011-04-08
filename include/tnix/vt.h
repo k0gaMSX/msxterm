@@ -68,6 +68,7 @@ struct term {
 
      unsigned char need_wrap;
      unsigned char decawm;      /* Autowrap Mode */
+     unsigned char decom;       /* origin mode */
 
      unsigned char xpos, ypos, xpos_s, ypos_s;
      struct video_att video, video_s;
